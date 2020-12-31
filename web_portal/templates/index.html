@@ -1,0 +1,113 @@
+{%  extends 'base.html' %}
+
+{%  block content %}
+    <div class="wrapper">
+        <section class="streams__section">
+            <div class="game__title">Welcome to Compal VR Cloud Gaming Portal</div>
+            <div class="stream__contents">
+                <div class="contents games">
+                    <div class="list__title"> Game List</div>
+                </div>
+                <div class="contents streams">
+                    <div class="list__title"> Stream List</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+<script>
+    async function getData(apiUrl) {
+        const myHeaders = new Headers({
+            'Content-Type': 'application/json'
+        });
+
+        let data = await fetch(apiUrl, {
+            method: "GET",
+            credentials: 'omit',
+            headers: myHeaders
+        }).then(res => res.json())
+        .catch(err => {
+            console.log('err', err);
+        });
+        console.log(data);
+        return data;
+    }
+
+    function appendData(dicts, selector) {
+        console.log(selector);
+        a = '.' + selector;
+        console.log(a);
+        const contents = document.querySelector(a);
+        for (let key in dicts) {
+            let game = dicts[key];
+            let imgURL = game['img_url'];
+            let title = game['game_title'];
+            let id =    game['game_id'];
+            let brief = game['game_brief'];
+            let type = game['game_type'];
+            console.log(imgURL, title, id);
+
+            let div = document.createElement('div');
+            div.classList.add('card');
+            div.innerHTML = `
+            <a href="/portal/games/${id}" class="link">
+                <img  class="img" src="${imgURL}">
+                <div class="stream__brief">
+                    <div class="stream__details">
+                        <div class="stream__status">${type}</div>
+                        <div class="stream__username">${title}</div>
+                        <div class="stream__username">${brief}</div>
+                    </div>
+                </div>
+            </a>
+            `;
+
+            contents.appendChild(div);
+        }
+    }
+
+    async function main() {
+        const gamesApiUrl = 'http://localhost:5000/games';
+        const streamsApiUrl = 'http://localhost:5000/streams';
+        const games_result = await getData(gamesApiUrl);
+        const streams_result = await getData(streamsApiUrl);
+
+        if (games_result['status']) {
+            let gamesDict = games_result['games'];
+            appendData(gamesDict, 'games');
+        } else {
+            console.log('No available game')
+        }
+
+        if (streams_result['status']) {
+            let gamesDict = games_result['games'];
+            appendData(gamesDict, 'streams');
+        } else {
+            console.log('No available stream')
+        }
+
+
+        //gamesArr.forEach( element => {
+        //    document.querySelector(`#no${i}`).textContent = element['game'].name;
+        //    i += 1;
+        //});
+    }
+
+    main();
+
+    // get streams of the games
+    {#const ul = document.querySelector('.menu_btns');#}
+    {#ul.addEventListener('click', function(e) {#}
+    {#    if (!e.target.classList.contains('menu_btns')) {#}
+    {#        e.target.classList.toggle('clicked');#}
+    {#        const game = e.target.textContent;#}
+    {#        streamsReq(game);#}
+    {#    }#}
+    {#);#}
+
+    // reload page
+
+
+</script>
+
+{%  endblock %}

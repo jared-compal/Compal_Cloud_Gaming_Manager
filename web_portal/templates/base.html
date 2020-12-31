@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Compal VR Cloud Gaming</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/latest/normalize.css">
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href= "{{ url_for('portal.static', filename='style.css') }}">
+</head>
+<body>
+<nav class="nav__bar">
+    <div class="page__title">Compal VR Cloud Gaming</div>
+    <ul class="menu_btns">
+        <li id="no0">Home</li>
+        <li id="no1">login</li>
+    </ul>
+</nav>
+
+{%  block content %}
+{% endblock %}
+<script>
+    document.querySelector('.menu_btns').addEventListener('click', function(e) {
+        window.location.replace("{{ url_for('portal.portal_page') }}")
+    });
+</script>
+</body>
+</html>

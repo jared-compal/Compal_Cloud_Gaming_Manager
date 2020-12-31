@@ -1,16 +1,20 @@
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, jsonify
 from Models import db, GameServers, StreamList, datetime, WaitingList
 from requests import get, post
-import logging
+from list_service import list_service
+from web_portal.web_portal import portal
+from flask_cors import CORS
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # MySql database
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:Aa123456@127.0.0.1:3306/cloud_game_db"
-
 db.init_app(app)
 
+app.register_blueprint(list_service)
+app.register_blueprint(portal, url_prefix='/portal')
 # cloudXR_client_cmd = "C:\Program Files\Nvidia Corporation\CloudXR\Client\CLoudXRClient.exe -w"
 
 
@@ -42,16 +46,6 @@ def unregister_game_server():
         db.session.commit()
 
     return g_server_ip + ' disconnected'
-
-
-@app.route('/games')
-def game_list():
-    # TBD
-    data = {"status": True,
-            "ip": "123"}
-    resp = jsonify(data)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
 
 
 @app.route('/games/<string:game_id>/launch', methods=['GET'])
@@ -91,7 +85,7 @@ def playing_game(game_id):
             game_server_res = post('http://{0}:5000/game-connection'.format(game_server_ip), data=req_data).json()
 
             # if game_server_res['launch success']:
-                # Client's gaming status also needs to update, TBD
+            # Client's gaming status also needs to update, TBD
             game_server_info.is_available = False
             db.session.commit()
             # update_waiting_list(player_ip, game_server_ip)
@@ -110,7 +104,7 @@ def playing_game(game_id):
 
 @app.route('/streaming', methods=['POST'])
 def streaming():
-    dict = {
+    stream_info = {
         'stream_ip': request.form.get('stream_ip', type=str),
         'game_title': request.form.get('game_title', type=str),
         'player_ip': request.form.get('player_ip', type=str)
@@ -120,6 +114,7 @@ def streaming():
                 'msg': 'Successfully create streaming channel'}
     return {'status': False,
             'msg': "Couldn't create streaming channel"}
+
 
 @app.route('/clean')
 def clean_streams():
@@ -156,9 +151,10 @@ def update_waiting_list(client_ip, server_ip):
     db.session.commit()
 
 
-def register_stream(dict):
+def register_stream(stream_info):
     #TBD
     return True
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
