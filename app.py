@@ -5,6 +5,7 @@ from list_service import list_service
 from web_portal.web_portal import portal
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 
@@ -112,8 +113,10 @@ def streaming():
     if register_stream(dict):
         return {'status': True,
                 'msg': 'Successfully create streaming channel'}
-    return {'status': False,
-            'msg': "Couldn't create streaming channel"}
+    return {
+            'status': False,
+            'msg': "Couldn't create streaming channel"
+            }
 
 
 @app.route('/clean')

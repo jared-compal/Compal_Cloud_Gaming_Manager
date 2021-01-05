@@ -1,0 +1,43 @@
+{%  extends 'base.html' %}
+
+{%  block content %}
+    <div class="wrapper">
+        <section class="streams__section">
+            <div class="fronter">
+                <a href="{{ url_for('portal.portal_page') }}">
+                    <div class="back__btn">Back to list</div>
+                </a>
+            </div>
+            <div class="stream__contents">
+                <div class="games">
+                    {% if type=='game' %}
+                        <h3> Game Info</h3>
+                    {% else %}
+                        <h3> Stream Info</h3>
+                    {% endif %}
+                    <img  class="img" src="{{ data.img_url }}">
+                    <div class="content__info">
+                        <div class="content__details">
+                            {% if type=='stream' %}
+                                <div class="content__player">Player - {{ data.player_info }}</div>
+                                <div class="content__data">Game Title- {{ data.content_title }}</div>
+                            {% else %}
+                                <div class="content__player">Game Title- {{ data.content_title }}</div>
+                                <div class="content__data">Type - {{ data.content_type }}</div>
+                            {% endif %}
+                            <div class="content__data">Description - {{ data.content_brief }}</div>
+
+                        </div>
+                    </div>
+                    {% if type=='stream' %}
+                        <button type="button" class="stream__btn" onclick="location.href='{{ data.content_url }}'"> 觀看串流 </button>
+{#                    {% else %}#}
+{#                        <button type="button" class="stream__btn" onclick="location.href='/games/{{ data.content_id }}/launch'"> 遊玩遊戲 </button>#}
+                    {% endif %}
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+{%  endblock %}
