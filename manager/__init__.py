@@ -1,16 +1,23 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
-
-app = Flask(__name__)
-cors = CORS(app, resources={r"*": {"origins": "*"}})
+from manager.config import Config
 
 # MySql database
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:Aa123456@127.0.0.1:3306/cloud_game_db"
 db = SQLAlchemy()
-db.init_app(app)
 
 
-from manager import routes
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    db.init_app(app)
+    cors = CORS(app, resources={r"*": {"origins": "*"}})
+
+    from manager import routes
+    from manager.list_service import list_service
+    from manager.web_portal.web_portal import portal
+    app.register_blueprint(list_service)
+    app.register_blueprint(portal, url_prefix='/portal')
+
+    return app

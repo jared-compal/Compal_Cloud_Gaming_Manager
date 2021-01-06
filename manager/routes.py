@@ -1,23 +1,21 @@
-from flask import request, jsonify
+from flask import Blueprint, request, jsonify
 from requests import post, get
 from manager.models import GameServers, StreamList, WaitingList, GameList, datetime
-from manager import app, db
-from manager.list_service import list_service, SERVER_ADDR
-from web_portal.web_portal import portal
+from manager import db
 
-
-app.register_blueprint(list_service)
-app.register_blueprint(portal, url_prefix='/portal')
+SERVER_ADDR = 'http://172.16.0.25:5000'
+# SERVER_ADDR = 'http://localhost:5000'
 # cloudXR_client_cmd = "C:\Program Files\Nvidia Corporation\CloudXR\Client\CLoudXRClient.exe -w"
+main = Blueprint('main', __name__)
 
 
-@app.route('/')
+@main.route('/')
 def index():
     return "Welcome to the Compal VR Cloud Gaming"
 
 
 # Register game server
-@app.route('/register')
+@main.route('/register')
 def register_game_server():
     g_server_ip = request.remote_addr
     print('register', g_server_ip)
@@ -26,7 +24,7 @@ def register_game_server():
 
 
 # Disconnection signal from game server
-@app.route('/deregister')
+@main.route('/deregister')
 def unregister_game_server():
     g_server_ip = request.remote_addr
     print('disconnect', g_server_ip)
@@ -40,7 +38,7 @@ def unregister_game_server():
     return g_server_ip + ' disconnected'
 
 
-@app.route('/games/<string:game_id>/launch', methods=['GET'])
+@main.route('/games/<string:game_id>/launch', methods=['GET'])
 def playing_game(game_id):
     response = {
         'msg': '',
@@ -94,7 +92,7 @@ def playing_game(game_id):
     return resp
 
 
-@app.route('/streaming', methods=['POST'])
+@main.route('/streaming', methods=['POST'])
 def add_stream():
     stream_info = {
         'server_ip': request.form.get('server_ip', type=str),
@@ -115,13 +113,13 @@ def add_stream():
 # """
 # The following is API for developing or under developing
 # """
-@app.route('/db')
+@main.route('/db')
 def db_sync():
     db.create_all()
     return "DB sync"
 
 
-@app.route('/clean')
+@main.route('/clean')
 def clean_streams():
     StreamList.query.delete()
     WaitingList.query.delete()
@@ -129,7 +127,7 @@ def clean_streams():
     return 'table cleaned'
 
 
-@app.route('/createGame', methods=['POST'])
+@main.route('/createGame', methods=['POST'])
 def add_game():
     new_game = GameList(
         game_id=request.form.get('game_id', type=int),
@@ -181,6 +179,3 @@ def register_stream(stream_info):
     return True
 
 
-# Press the green button in the gutter to run the script.
-# if __name__ == '__main__':
-#     app.run()
