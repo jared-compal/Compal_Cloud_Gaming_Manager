@@ -1,7 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+from manager import db
 from datetime import datetime
-
-db = SQLAlchemy()
 
 
 # Table of Game servers

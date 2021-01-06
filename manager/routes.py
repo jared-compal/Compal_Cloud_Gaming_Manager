@@ -1,18 +1,10 @@
-from flask import Flask, request, jsonify
-from Models import db, GameServers, StreamList, datetime, WaitingList, GameList
-from requests import get, post
-from list_service import list_service
-from web_portal.web_portal import portal, SERVER_ADDR
-from flask_cors import CORS
+from flask import request, jsonify
+from requests import post, get
+from manager.models import GameServers, StreamList, WaitingList, GameList, datetime
+from manager import app, db
+from manager.list_service import list_service, SERVER_ADDR
+from web_portal.web_portal import portal
 
-
-app = Flask(__name__)
-cors = CORS(app, resources={r"*": {"origins": "*"}})
-
-# MySql database
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:Aa123456@127.0.0.1:3306/cloud_game_db"
-db.init_app(app)
 
 app.register_blueprint(list_service)
 app.register_blueprint(portal, url_prefix='/portal')
@@ -190,5 +182,5 @@ def register_stream(stream_info):
 
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    app.run()
+# if __name__ == '__main__':
+#     app.run()

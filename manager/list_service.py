@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from Models import StreamList, GameList
+from manager.models import StreamList, GameList
 
 SERVER_ADDR = 'http://172.16.0.25:5000'
 # SERVER_ADDR = 'http://localhost:5000'
