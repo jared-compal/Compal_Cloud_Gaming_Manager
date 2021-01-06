@@ -19,20 +19,19 @@
                     <div class="content__info">
                         <div class="content__details">
                             {% if type=='stream' %}
-                                <div class="content__player">Player - {{ data.player_info }}</div>
-                                <div class="content__data">Game Title- {{ data.content_title }}</div>
+                                <div class="content__title">{{ data.content_title }}</div>
+                                <div class="content__data">Player - {{ data.player_info }}</div>
                             {% else %}
-                                <div class="content__player">Game Title- {{ data.content_title }}</div>
+                                <div class="content__title">{{ data.content_title }}</div>
                                 <div class="content__data">Type - {{ data.content_type }}</div>
+                                <div class="content__data">Description - {{ data.content_brief }}</div>
                             {% endif %}
-                            <div class="content__data">Description - {{ data.content_brief }}</div>
-
                         </div>
                     </div>
                     {% if type=='stream' %}
-                        <button type="button" class="stream__btn" onclick="location.href='{{ data.content_url }}'"> 觀看串流 </button>
-{#                    {% else %}#}
-{#                        <button type="button" class="stream__btn" onclick="location.href='/games/{{ data.content_id }}/launch'"> 遊玩遊戲 </button>#}
+                        <div class="btn__div">
+                            <button type="button" class="stream__btn" onclick="window.location.href='http://{{ data.content_url }}'"> 觀看串流 </button>
+                        </div>
                     {% endif %}
 
                 </div>

@@ -20,8 +20,14 @@
 {%  block content %}
 {% endblock %}
 <script>
-    document.querySelector('.menu_btns').addEventListener('click', function(e) {
+    document.querySelector('.page__title').addEventListener('click', function(e) {
         window.location.replace("{{ url_for('portal.portal_page') }}")
+    });
+    document.querySelector('#no0').addEventListener('click', function(e) {
+        window.location.replace("{{ url_for('portal.portal_page') }}")
+    });
+    document.querySelector('#no1').addEventListener('click', function(e) {
+        window.location.replace("{{ url_for('portal.login_page') }}")
     });
 </script>
 </body>

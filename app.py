@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from Models import db, GameServers, StreamList, datetime, WaitingList
+from Models import db, GameServers, StreamList, datetime, WaitingList, GameList
 from requests import get, post
 from list_service import list_service
-from web_portal.web_portal import portal
+from web_portal.web_portal import portal, SERVER_ADDR
 from flask_cors import CORS
 
 
@@ -21,12 +21,11 @@ app.register_blueprint(portal, url_prefix='/portal')
 
 @app.route('/')
 def index():
-    db.create_all()
-    return "DB sync"
+    return "Welcome to the Compal VR Cloud Gaming"
 
 
 # Register game server
-@app.route('/registration')
+@app.route('/register')
 def register_game_server():
     g_server_ip = request.remote_addr
     print('register', g_server_ip)
@@ -35,7 +34,7 @@ def register_game_server():
 
 
 # Disconnection signal from game server
-@app.route('/cancellation')
+@app.route('/deregister')
 def unregister_game_server():
     g_server_ip = request.remote_addr
     print('disconnect', g_server_ip)
@@ -104,19 +103,30 @@ def playing_game(game_id):
 
 
 @app.route('/streaming', methods=['POST'])
-def streaming():
+def add_stream():
     stream_info = {
-        'stream_ip': request.form.get('stream_ip', type=str),
-        'game_title': request.form.get('game_title', type=str),
-        'player_ip': request.form.get('player_ip', type=str)
+        'server_ip': request.form.get('server_ip', type=str),
+        'stream_title': request.form.get('stream_title', type=str),
+        'client_ip': request.form.get('player_ip', type=str),
+        'stream_url': request.form.get('stream_url', type=str),
+        'client_username': request.form.get('player_username', type=str)
     }
-    if register_stream(dict):
+    if register_stream(stream_info):
         return {'status': True,
                 'msg': 'Successfully create streaming channel'}
     return {
             'status': False,
             'msg': "Couldn't create streaming channel"
             }
+
+
+# """
+# The following is API for developing or under developing
+# """
+@app.route('/db')
+def db_sync():
+    db.create_all()
+    return "DB sync"
 
 
 @app.route('/clean')
@@ -127,13 +137,24 @@ def clean_streams():
     return 'table cleaned'
 
 
-def save_stream_source(game_server_ip, gamer_ip, game_id):
-    new_stream = StreamList(server_ip=game_server_ip, client_ip=gamer_ip, game_title=game_id)
-    db.session.add(new_stream)
+@app.route('/createGame', methods=['POST'])
+def add_game():
+    new_game = GameList(
+        game_id=request.form.get('game_id', type=int),
+        game_title=request.form.get('game_title', type=str),
+        game_type=request.form.get('game_type', type=str),
+        game_brief=request.form.get('game_brief', type=str),
+        img_url="{0}/static/games_icon/redout.jpg".format(SERVER_ADDR)
+    )
+    db.session.add(new_game)
     db.session.commit()
-    print('Stream created')
+    return {'status': True,
+            'msg': 'Successfully add game to the list'}
 
 
+# """
+# The following is encapsulated functions
+# """
 def get_register(g_server_ip):
     query = GameServers.query.filter_by(server_ip=g_server_ip).first()
     # If game server registered before, update its is_available and last_connection_at
@@ -155,7 +176,16 @@ def update_waiting_list(client_ip, server_ip):
 
 
 def register_stream(stream_info):
-    #TBD
+    new_channel = StreamList(
+        server_ip=stream_info['server_ip'],
+        client_ip=stream_info['client_ip'],
+        client_username=stream_info['client_username'],
+        stream_title=stream_info['stream_title'],
+        img_url='{0}/static/streams_icon/live_user_lol_ambition.jpg'.format(SERVER_ADDR),
+        stream_url=stream_info['stream_url'],
+        started_from=datetime.utcnow())
+    db.session.add(new_channel)
+    db.session.commit()
     return True
 
 

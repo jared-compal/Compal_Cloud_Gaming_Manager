@@ -2,13 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="76f65615-4b3d-4da0-8549-919875e394b2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/web_portal/templates/content_page.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web_portal/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/list_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/list_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/streams_icon/live_user_chiao622-440x248.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/streams_icon/live_user_chiao622.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/streams_icon/live_user_lol_ambition-440x248.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/static/streams_icon/live_user_lol_ambition.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_portal/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web_portal/static/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_portal/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/web_portal/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web_portal/templates/content_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/web_portal/templates/content_page.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_portal/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web_portal/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web_portal/web_portal.py" beforeDir="false" afterPath="$PROJECT_DIR$/web_portal/web_portal.py" afterDir="false" />
     </list>
@@ -22,6 +23,7 @@
       <list>
         <option value="Flask Main" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -57,12 +59,13 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/web_portal/templates" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web_portal/templates/web_portal" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -99,7 +102,7 @@
       <option name="presentableId" value="Default" />
       <updated>1609228873647</updated>
       <workItem from="1609228882839" duration="44721000" />
-      <workItem from="1609722453489" duration="18518000" />
+      <workItem from="1609722453489" duration="37901000" />
     </task>
     <servers />
   </component>
@@ -122,6 +125,6 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Compal_Cloud_Gaming_Manager$Compal_Cloud_Gaming_Manager.coverage" NAME="Compal_Cloud_Gaming_Manager Coverage Results" MODIFIED="1609754971552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Compal_Cloud_Gaming_Manager$Compal_Cloud_Gaming_Manager.coverage" NAME="Compal_Cloud_Gaming_Manager Coverage Results" MODIFIED="1609901710499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
