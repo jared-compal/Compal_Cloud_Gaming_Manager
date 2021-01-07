@@ -15,12 +15,15 @@ def index():
 
 
 # Register game server
-@main.route('/register')
+@main.route('/register', methods=['GET', 'POST'])
 def register_game_server():
+    # if request.method == 'POST':
     g_server_ip = request.remote_addr
     print('register', g_server_ip)
     get_register(g_server_ip)
     return g_server_ip + ' game server registered'
+    # else:
+    #     return 'Please provide available game list in request body.'
 
 
 # Disconnection signal from game server
