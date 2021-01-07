@@ -11,9 +11,16 @@ class GameServers(db.Model):
                            default=datetime.utcnow)
     last_connection_at = db.Column(db.DateTime, nullable=True)
     is_available = db.Column(db.Boolean, nullable=False, default=True)
+    db_available_games = db.relationship("AvailableGamesForServers", backref="server")
 
     def __repr__(self):
         return '<Gserver id:{0} ip:{1}>'.format(self.id, self.server_ip)
+
+
+class AvailableGamesForServers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.String(32), nullable=False)
+    server_ip = db.Column(db.String(80), db.ForeignKey('game_servers.server_ip'), nullable=False)
 
 
 class StreamList(db.Model):
@@ -30,7 +37,7 @@ class StreamList(db.Model):
 
 class GameList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    game_id = db.Column(db.Integer, nullable=False)
+    game_id = db.Column(db.String(32), nullable=False)
     game_title = db.Column(db.String(32), nullable=False)
     game_type = db.Column(db.String(32))
     game_brief = db.Column(db.String(256))

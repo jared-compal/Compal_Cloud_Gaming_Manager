@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for
 from requests import get
 
 
-# SERVER_ADDR = 'http://172.16.0.25:5000'
-SERVER_ADDR = 'http://localhost:5000'
+SERVER_ADDR = 'http://172.16.0.25:5000'
+# SERVER_ADDR = 'http://localhost:5000'
 portal = Blueprint('portal', __name__, template_folder='templates', static_folder='static')
 
 

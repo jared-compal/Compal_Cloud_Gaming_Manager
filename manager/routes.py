@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from requests import post, get
-from manager.models import GameServers, StreamList, WaitingList, GameList, datetime
+from manager.models import AvailableGamesForServers, GameServers, StreamList, WaitingList, GameList, datetime
 from manager import db
 
 SERVER_ADDR = 'http://172.16.0.25:5000'
@@ -15,15 +15,17 @@ def index():
 
 
 # Register game server
-@main.route('/register', methods=['GET'])
+@main.route('/register', methods=['POST'])
 def register_game_server():
-    # if request.method == 'POST':
-    g_server_ip = request.remote_addr
-    print('register', g_server_ip)
-    get_register(g_server_ip)
-    return g_server_ip + ' game server registered'
-    # else:
-    #     return 'Please provide available game list in request body.'
+    games = request.form.getlist('games')
+    if games:
+        g_server_ip = request.remote_addr
+        get_register(g_server_ip)
+        add_server_games(games, g_server_ip)
+        return g_server_ip + ' game server registered'
+
+    else:
+        return 'Please list available games'
 
 
 # Disconnection signal from game server
@@ -35,7 +37,9 @@ def unregister_game_server():
 
     if query:
         query.is_available = False
-        StreamList.query.filter_by(server_ip=g_server_ip).delete()
+        delete_games = AvailableGamesForServers.__table__.delete().where(AvailableGamesForServers.server_ip == g_server_ip)
+        db.session.execute(delete_games)
+        # StreamList.query.filter_by(server_ip=g_server_ip).delete()
         db.session.commit()
 
     return g_server_ip + ' disconnected'
@@ -48,8 +52,9 @@ def playing_game(game_id):
         'status': False
     }
     player_ip = request.remote_addr
-    is_client_awaiting = WaitingList.query.filter_by(client_ip=player_ip).first()
 
+    # is_client_awaiting = WaitingList.query.filter_by(client_ip=player_ip).first()
+    is_client_awaiting = None
     if is_client_awaiting:
         processing_server_ip = is_client_awaiting.server_ip
         processing_server_res = get('http://{0}:5000/game-connection'.format(processing_server_ip)).json()
@@ -64,12 +69,16 @@ def playing_game(game_id):
         else:
             response['msg'] = 'Processing... Game server is allocating resources to launch game...'
     else:
-        game_server_info = GameServers.query.filter_by(is_available=True).first()
+        servers = GameServers.query.join(AvailableGamesForServers, AvailableGamesForServers.server_ip == GameServers.server_ip)\
+                                        .filter(AvailableGamesForServers.game_id == game_id)\
+                                        .filter(GameServers.is_available == True).all()
+
         # If cannot query any game server
-        if not game_server_info:
+        if not servers:
             response['msg'] = 'Currently no available game server'
         else:
-            game_server_ip = game_server_info.server_ip
+            game_server = servers[0]
+            game_server_ip = game_server.server_ip
             req_data = {
                 "player_ip": player_ip,
                 "game_title": game_id,
@@ -79,16 +88,13 @@ def playing_game(game_id):
 
             # if game_server_res['launch success']:
             # Client's gaming status also needs to update, TBD
-            game_server_info.is_available = False
+            game_server.is_available = False
             db.session.commit()
             # update_waiting_list(player_ip, game_server_ip)
-            # save_stream_source(game_server_ip, player_ip, game_id)
 
             response['status'] = True
             response['msg'] = 'Connecting... Now launching game title...'
             response['game_server_ip'] = game_server_ip
-            # else:
-            #     response['msg'] = 'Error when launching game server'
 
     resp = jsonify(response)
     resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -108,9 +114,9 @@ def add_stream():
         return {'status': True,
                 'msg': 'Successfully create streaming channel'}
     return {
-            'status': False,
-            'msg': "Couldn't create streaming channel"
-            }
+        'status': False,
+        'msg': "Couldn't create streaming channel"
+    }
 
 
 # """
@@ -182,3 +188,10 @@ def register_stream(stream_info):
     return True
 
 
+def add_server_games(games, server_ip):
+    game_list = []
+    for game_id in games:
+        game_list.append(AvailableGamesForServers(game_id=game_id, server_ip=server_ip))
+
+    db.session.add_all(game_list)
+    db.session.commit()
