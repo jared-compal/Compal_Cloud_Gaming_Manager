@@ -15,7 +15,7 @@ def index():
 
 
 # Register game server
-@main.route('/register', methods=['GET', 'POST'])
+@main.route('/register', methods=['GET'])
 def register_game_server():
     # if request.method == 'POST':
     g_server_ip = request.remote_addr

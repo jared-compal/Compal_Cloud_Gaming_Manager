@@ -14,9 +14,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     cors = CORS(app, resources={r"*": {"origins": "*"}})
 
-    from manager import routes
+    from manager.routes import main
     from manager.list_service import list_service
     from manager.web_portal.web_portal import portal
+    app.register_blueprint(main)
     app.register_blueprint(list_service)
     app.register_blueprint(portal, url_prefix='/portal')
 
