@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify
 from requests import post, get
 from manager.models import AvailableGamesForServers, GameServers, StreamList, WaitingList, GameList, datetime
-from manager import db
+from manager import db, Config
 
-SERVER_ADDR = 'http://172.16.0.25:5000'
-# SERVER_ADDR = 'http://localhost:5000'
+SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 main = Blueprint('main', __name__)
 
 

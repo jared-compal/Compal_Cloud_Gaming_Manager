@@ -174,10 +174,12 @@ a:visited {
 .card__title {
     font-size: 24px;
 }
+.btn {
+    margin: 5px 0px;
+}
 .btn__div {
     display: flex;
     justify-content: flex-end;
-    margin: 5px 0px;
 }
 .stream__btn {
     background-color: lightgrey;
@@ -188,6 +190,37 @@ a:link {
   text-decoration: none;
 }
 
+.alert {
+    padding: 10px 5px;
+}
+
+.alert-danger {
+    color: red;
+}
+
+.alert-success {
+    color: green;
+}
+
+.invalid-feedback {
+    color: red;
+    padding: 5px 0px;
+}
+
+.form-group {
+
+}
+.form-row {
+    display: grid;
+    margin:5px;
+    justify-items: center;
+}
+.form-control-label {
+
+}
+.form-control-lg {
+    text-align: center;
+}
 @media(max-width: 780px){
     nav {
         display: block;

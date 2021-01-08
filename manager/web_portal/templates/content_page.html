@@ -1,42 +1,38 @@
 {%  extends 'base.html' %}
 
 {%  block content %}
-    <div class="wrapper">
-        <section class="streams__section">
-            <div class="fronter">
-                <a href="{{ url_for('portal.portal_page') }}">
-                    <div class="back__btn">Back to list</div>
-                </a>
-            </div>
-            <div class="stream__contents">
-                <div class="games">
-                    {% if type=='game' %}
-                        <h3> Game Info</h3>
-                    {% else %}
-                        <h3> Stream Info</h3>
-                    {% endif %}
-                    <img  class="img" src="{{ data.img_url }}">
-                    <div class="content__info">
-                        <div class="content__details">
-                            {% if type=='stream' %}
-                                <div class="content__title">{{ data.content_title }}</div>
-                                <div class="content__data">Player - {{ data.player_info }}</div>
-                            {% else %}
-                                <div class="content__title">{{ data.content_title }}</div>
-                                <div class="content__data">Type - {{ data.content_type }}</div>
-                                <div class="content__data">Description - {{ data.content_brief }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
+    <div class="fronter">
+        <a href="{{ url_for('portal.portal_page') }}">
+            <div class="back__btn">Back to list</div>
+        </a>
+    </div>
+    <div class="stream__contents">
+        <div class="games">
+            {% if type=='game' %}
+                <h3> Game Info</h3>
+            {% else %}
+                <h3> Stream Info</h3>
+            {% endif %}
+            <img  class="img" src="{{ data.img_url }}">
+            <div class="content__info">
+                <div class="content__details">
                     {% if type=='stream' %}
-                        <div class="btn__div">
-                            <button type="button" class="stream__btn" onclick="window.location.href='http://{{ data.content_url }}'"> 觀看串流 </button>
-                        </div>
+                        <div class="content__title">{{ data.content_title }}</div>
+                        <div class="content__data">Player - {{ data.player_info }}</div>
+                    {% else %}
+                        <div class="content__title">{{ data.content_title }}</div>
+                        <div class="content__data">Type - {{ data.content_type }}</div>
+                        <div class="content__data">Description - {{ data.content_brief }}</div>
                     {% endif %}
-
                 </div>
             </div>
-        </section>
+            {% if type=='stream' %}
+                <div class="btn btn__div">
+                    <button type="button" class="stream__btn" onclick="window.location.href='http://{{ data.content_url }}'"> 觀看串流 </button>
+                </div>
+            {% endif %}
+
+        </div>
     </div>
 
 {%  endblock %}

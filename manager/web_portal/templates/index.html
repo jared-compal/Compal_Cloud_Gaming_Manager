@@ -1,43 +1,40 @@
 {%  extends 'base.html' %}
 
 {%  block content %}
-    <div class="wrapper">
-        <section class="streams__section">
-            <div class="fronter">Welcome to Compal VR Cloud Gaming Portal</div>
-            <div class="stream__contents">
-                <div class="contents games">
-                    <div class="list__title"> Game List</div>
-                    {% for key, game in games.items() %}
-                        <div class="card">
-                            <a href="/portal/games/{{ game.content_id }}" class="link">
-                                <img  class="img" src="{{ game.img_url }}">
-                                <div class="stream__brief">
-                                    <div class="stream__details">
-                                        <div class="card__content card__title">{{ game.content_title }}</div>
-                                        <div class="card__content">{{ game.content_type }}</div>
-                                    </div>
-                                </div>
-                            </a>
+    <div class="fronter">Welcome to Compal VR Cloud Gaming Portal</div>
+    <div class="stream__contents">
+        <div class="contents games">
+            <div class="list__title"> Game List</div>
+            {% for key, game in games.items() %}
+                <div class="card">
+                    <a href="/portal/games/{{ game.content_id }}" class="link">
+                        <img  class="img" src="{{ game.img_url }}">
+                        <div class="stream__brief">
+                            <div class="stream__details">
+                                <div class="card__content card__title">{{ game.content_title }}</div>
+                                <div class="card__content">{{ game.content_type }}</div>
+                            </div>
                         </div>
-                    {% endfor %}
+                    </a>
                 </div>
-                <div class="contents streams">
-                    <div class="list__title"> Stream List</div>
-                    {% for key, stream in streams.items() %}
-                        <div class="card">
-                            <a href="/portal/streams/{{ stream.content_id }}" class="link">
-                                <img  class="img" src="{{ stream.img_url }}">
-                                <div class="stream__brief">
-                                    <div class="stream__details">
-                                        <div class="card__content card__title">{{ stream.content_title }}</div>
-                                        <div class="card__content">{{ stream.player_info }}</div>
-                                    </div>
-                                </div>
-                            </a>
+            {% endfor %}
+        </div>
+        <div class="contents streams">
+            <div class="list__title"> Stream List</div>
+            {% for key, stream in streams.items() %}
+                <div class="card">
+                    <a href="/portal/streams/{{ stream.content_id }}" class="link">
+                        <img  class="img" src="{{ stream.img_url }}">
+                        <div class="stream__brief">
+
+                            <div class="stream__details">
+                                <div class="card__content card__title">{{ stream.content_title }}</div>
+                                <div class="card__content">{{ stream.player_info }}</div>
+                            </div>
                         </div>
-                    {% endfor %}
+                    </a>
                 </div>
-            </div>
-        </section>
+            {% endfor %}
+        </div>
     </div>
 {%  endblock %}
