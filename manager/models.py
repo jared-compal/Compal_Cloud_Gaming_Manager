@@ -50,10 +50,18 @@ class GameList(db.Model):
     img_url = db.Column(db.String(256))
 
 
-class WaitingList(db.Model):
+class ClientConnectionList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    client_ip = db.Column(db.String(32), unique=True, nullable=False)
-    server_ip = db.Column(db.String(32), unique=True, nullable=False)
+    user_id = db.Column(db.String(32), unique=False, nullable=True)
+    client_ip = db.Column(db.String(32), unique=False, nullable=False)
+    server_ip = db.Column(db.String(32), unique=False, nullable=False)
+    game_id = db.Column(db.String(32), unique=False, nullable=False)
+    connection_status = db.Column(db.String(32), nullable=False)
+    launch_time = db.Column(db.DateTime, nullable=False,
+                            default=datetime.utcnow)
+    close_time = db.Column(db.DateTime, nullable=True)
+    total_play_time = db.Column(db.BigInteger, nullable=True,
+                                default=0)
 
 
 class User(db.Model, UserMixin):

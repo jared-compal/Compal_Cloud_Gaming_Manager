@@ -8,7 +8,7 @@
             {% for key, game in games.items() %}
                 <div class="card">
                     <a href="/portal/games/{{ game.content_id }}" class="link">
-                        <img  class="img" src="{{ game.img_url }}">
+                        <img  class="img img__small" src="{{ game.img_url }}">
                         <div class="stream__brief">
                             <div class="stream__details">
                                 <div class="card__content card__title">{{ game.content_title }}</div>
@@ -24,7 +24,7 @@
             {% for key, stream in streams.items() %}
                 <div class="card">
                     <a href="/portal/streams/{{ stream.content_id }}" class="link">
-                        <img  class="img" src="{{ stream.img_url }}">
+                        <img  class="img img__small" src="{{ stream.img_url }}">
                         <div class="stream__brief">
 
                             <div class="stream__details">

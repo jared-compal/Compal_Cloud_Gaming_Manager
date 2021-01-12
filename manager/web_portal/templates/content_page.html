@@ -13,7 +13,7 @@
             {% else %}
                 <h3> Stream Info</h3>
             {% endif %}
-            <img  class="img" src="{{ data.img_url }}">
+            <img  class="img__medium" src="{{ data.img_url }}">
             <div class="content__info">
                 <div class="content__details">
                     {% if type=='stream' %}
@@ -28,7 +28,7 @@
             </div>
             {% if type=='stream' %}
                 <div class="btn btn__div">
-                    <button type="button" class="stream__btn" onclick="window.location.href='http://{{ data.content_url }}'"> 觀看串流 </button>
+                    <button type="button" class="stream__btn" onclick="window.location.href='{{ data.content_url }}'"> 觀看串流 </button>
                 </div>
             {% endif %}
 
