@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify
-from requests import post, get
+from requests import post
+
 from manager.models import AvailableGamesForServers, GameServers, StreamList, GameList, datetime, ClientConnectionList
-from manager import db, Config
+from manager import db, Config, csrf
 
 SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 
 main = Blueprint('main', __name__)
+csrf.exempt(main)
 
 
 @main.route('/')
@@ -16,9 +18,10 @@ def index():
 # Register game server
 @main.route('/register', methods=['POST'])
 def register_game_server():
+    print('begin register')
     games = request.form.getlist('games')
     print(games)
-    if games:
+    if games is not None:
         g_server_ip = request.remote_addr
         get_register(g_server_ip)
         print('register game server')
@@ -36,7 +39,7 @@ def unregister_game_server():
     print('disconnect ', g_server_ip)
     query = GameServers.query.filter_by(server_ip=g_server_ip).first()
 
-    if query:
+    if query is not None:
         query.is_available = False
         query.client_ip = ''
         delete_games = AvailableGamesForServers.__table__.delete().where(
@@ -65,7 +68,7 @@ def playing_game(game_id):
             .filter(AvailableGamesForServers.game_id == game_id) \
             .filter(GameServers.is_available == True).all()
         print(servers)
-        if not servers:  # if cannot query any game server
+        if servers is None:  # if cannot query any game server
             response['msg'] = 'Currently no available game server'
         else:
             game_server = servers[0]  # default choose the first object
@@ -87,7 +90,7 @@ def playing_game(game_id):
             # update_waiting_list(player_ip, game_server_ip)
 
             response['status'] = True
-            response['msg'] = 'Connecting... Now launching game title...'
+            response['msg'] = 'Succesfully allocate game server... connecting then launching game title...'
             response['game_server_ip'] = game_server_ip
 
     resp = jsonify(response)
@@ -104,11 +107,11 @@ def resume_game():
     }
     client_ip = request.remote_addr
     game_connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
-    if game_connection:
+    if game_connection is not None:
         data['server_ip'] = game_connection.server_ip
     else:
         data['status'] = False
-        data['msg'] = 'Idle too long... The game has already been closed'
+        data['msg'] = 'The game has already been closed... it could be due to idling for too long. '
     return data
 
 
@@ -120,7 +123,7 @@ def close_game():
     }
     client_ip = request.remote_addr
     game_server = GameServers.query.filter_by(client_ip=client_ip, is_available=False).first()
-    if game_server:
+    if game_server is not None:
         req_data = {
             'client_ip': client_ip
         }
@@ -132,7 +135,7 @@ def close_game():
 
     else:
         data['status'] = False
-        data['msg'] = 'Game has been closed'
+        data['msg'] = 'Game has already been closed'
         return data
 
 
@@ -145,7 +148,7 @@ def update_connection_status():
     connection_status = request.form.get('connection_status', type=str)
     print(client_ip, game_id, server_ip, connection_status)
     query = ClientConnectionList.query.filter_by(client_ip=client_ip, server_ip=server_ip, game_id=game_id).first()
-    if not query:
+    if query is None:
         print('new connection')
         new_connection = ClientConnectionList(
             server_ip=server_ip,
@@ -214,7 +217,7 @@ def add_game():
 def get_register(g_server_ip):
     """ register the game server to DB """
     query = GameServers.query.filter_by(server_ip=g_server_ip).first()  # if existed, update its status
-    if query:
+    if query is not None:
         query.is_available = True
         query.last_connection_at = datetime.utcnow()
         db.session.commit()
