@@ -10,25 +10,33 @@
 </head>
 <body>
 <nav class="nav__bar">
-    <div class="page__title">Compal VR Cloud Gaming</div>
+    <div class="page__title" onclick="window.location.replace('{{ url_for('portal.portal_page') }}')">Compal VR Cloud Gaming</div>
     <ul class="menu_btns">
-        <li id="no0">Home</li>
-        <li id="no1">login</li>
+        <li id="no0" onclick="window.location.replace('{{ url_for('portal.portal_page') }}')">Home</li>
+        {% if current_user.is_authenticated %}
+            <li id="no1" onclick="window.location.replace('{{ url_for('portal.logout') }}')">logout</li>
+        {% else %}
+            <li id="no2" onclick="window.location.replace('{{ url_for('portal.register_page') }}')">Register</li>
+            <li id="no3" onclick="window.location.replace('{{ url_for('portal.login_page') }}')">login</li>
+        {% endif %}
     </ul>
 </nav>
-
-{%  block content %}
-{% endblock %}
+<div class="wrapper">
+    <section class="streams__section">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {%  block content %}
+        {% endblock %}
+    </section>
+</div>
 <script>
-    document.querySelector('.page__title').addEventListener('click', function(e) {
-        window.location.replace("{{ url_for('portal.portal_page') }}")
-    });
-    document.querySelector('#no0').addEventListener('click', function(e) {
-        window.location.replace("{{ url_for('portal.portal_page') }}")
-    });
-    document.querySelector('#no1').addEventListener('click', function(e) {
-        window.location.replace("{{ url_for('portal.login_page') }}")
-    });
 </script>
 </body>
 </html>
