@@ -10,7 +10,6 @@ from manager.config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-csrf = CSRFProtect()
 
 
 def create_app(config_class=Config):
@@ -19,9 +18,9 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     bcrypt.init_app(app)
-    csrf.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'login'
+    login_manager.login_view = 'auth_service.user_login'
+    login_manager.login_message = 'Please login to access this page'
     login_manager.login_message_category = 'info'
     cors = CORS(app, resources={r"*": {"origins": "*"}})
 

@@ -1,16 +1,18 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post
+from flask_login import login_required
 
 from manager.models import AvailableGamesForServers, GameServers, StreamList, GameList, datetime, ClientConnectionList
-from manager import db, Config, csrf
+from manager import db, Config
 
 SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 
 main = Blueprint('main', __name__)
-csrf.exempt(main)
 
 
 @main.route('/')
+# @login_required
 def index():
     return "Welcome to the Compal VR Cloud Gaming"
 
@@ -181,6 +183,13 @@ def add_stream():
         'status': False,
         'msg': "Couldn't create streaming channel"
     }
+
+
+@main.route('/download/<filename>')
+def download(filename):
+    print(main.root_path)
+    dir_path = os.path.join(main.root_path, 'download')
+    return send_from_directory(dir_path, filename, as_attachment=True)
 
 
 # """

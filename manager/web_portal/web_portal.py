@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from requests import get
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import login_user, current_user, logout_user
 
 from manager import bcrypt, db, Config
 from manager.web_portal.forms import RegistrationForm, LoginForm
