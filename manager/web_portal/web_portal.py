@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from requests import get
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 from manager import bcrypt, db, Config
 from manager.web_portal.forms import RegistrationForm, LoginForm
@@ -12,6 +12,7 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 
 
 @portal.route('/')
+@login_required
 def portal_page():
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()
@@ -19,14 +20,16 @@ def portal_page():
 
 
 @portal.route('/streams/<stream_id>')
+@login_required
 def portal_streams(stream_id):
     stream_info = get('{0}/streams/{1}'.format(SERVER_ADDR, stream_id)).json()
     if stream_info['status']:
         return render_template('content_page.html', data=stream_info['stream'], type='stream')
-    return redirect(url_for('portal_page'), code=302)
+    return redirect(url_for('portal.portal_page'), code=302)
 
 
 @portal.route('/games/<game_id>')
+@login_required
 def portal_games(game_id):
     game_info = get('{0}/games/{1}'.format(SERVER_ADDR, game_id)).json()
     if game_info['status']:

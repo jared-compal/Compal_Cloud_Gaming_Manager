@@ -2,16 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="76f65615-4b3d-4da0-8549-919875e394b2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/manager/main/download/openvpn.msi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manager/backstage/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manager/backstage/backstage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manager/backstage/templates/base.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manager/backstage/templates/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager/auth/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/auth/auth_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager/list_service/list_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/list_service/list_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager/main/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/main/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manager/web_portal/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manager/web_portal/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manager/web_portal/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager/web_portal/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/static/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager/web_portal/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager/web_portal/web_portal.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/web_portal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,12 +67,13 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/manager/web_portal/templates" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/manager/backstage/templates" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="http.proxy" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Jared_Wu\PycharmProjects\Compal_Cloud_Gaming_Manager\manager\backstage\templates" />
       <recent name="C:\Users\Jared_Wu\PycharmProjects\Compal_Cloud_Gaming_Manager\manager\web_portal\templates" />
       <recent name="C:\Users\Jared_Wu\PycharmProjects\Compal_Cloud_Gaming_Manager\web_portal\templates" />
     </key>
@@ -126,7 +131,10 @@
       <updated>1609228873647</updated>
       <workItem from="1609228882839" duration="44721000" />
       <workItem from="1609722453489" duration="37901000" />
-      <workItem from="1610066915649" duration="79022000" />
+      <workItem from="1610066915649" duration="109599000" />
+      <workItem from="1610697658700" duration="3940000" />
+      <workItem from="1610931868575" duration="23274000" />
+      <workItem from="1611033010163" duration="44748000" />
     </task>
     <servers />
   </component>
