@@ -208,6 +208,17 @@ a:link {
     color: green;
 }
 
+.alert-info {
+    color: cyan;
+}
+
+.user__label {
+    vertical-align: middle;
+    display: table-cell;
+    padding: 10px;
+    font-size: 20px;
+}
+
 .invalid-feedback {
     color: red;
     padding: 5px 0px;

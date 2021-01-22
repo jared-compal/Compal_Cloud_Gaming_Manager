@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_manager, current_user
 
 from manager.models import StreamList, GameList, ClientConnectionList
 
@@ -13,7 +14,7 @@ def show_streams():
         "streams": {
         }
     }
-    if query is not None:
+    if query:
         data['total_num'] = len(query)
 
         i = 0
@@ -21,9 +22,11 @@ def show_streams():
             data['streams'][i] = {
                 "content_id": item.id,
                 "content_title": item.stream_title,
+                "content_brief": item.stream_title,
                 "img_url": item.img_url,
                 "content_url": item.stream_url,
-                "player_info": item.client_username
+                "player_info": item.client_username,
+                "player_id": item.client_username
             }
             i += 1
     else:
@@ -38,12 +41,13 @@ def show_streams():
 @list_service.route('/streams/<string:stream_id>')
 def show_stream(stream_id):
     item = StreamList.query.filter_by(id=stream_id).first()
-    if item is not None:
+    if item:
         data = {
             "status": True,
             "stream": {
                 "content_id": item.id,
                 "content_title": item.stream_title,
+                "content_brief": item.stream_title,
                 "img_url": item.img_url,
                 "content_url": item.stream_url,
                 "player_info": item.client_username
@@ -67,26 +71,26 @@ def show_games():
                                                    connection_status='playing').first()
     playing_game_id = ''
     if playing is not None:
+        print('playing yes')
         playing_game_id = playing.game_id
-    print(playing_game_id)
     data = {
             "status": True,
             "games": {
             }}
-    if query is not None:
-        data['total_num']: len(query)
+    if query:
+        data['total_num'] = len(query)
         i = 0
         for item in query:
             launched = False
             if playing_game_id == item.game_id:
                 launched = True
             data['games'][i] = {
-                'already_launched': launched,
+                "already_launched": launched,
                 "content_id": item.game_id,
                 "content_title": item.game_title,
-                "img_url": item.img_url,
                 "content_type": item.game_type,
-                "content_brief": item.game_brief
+                "content_brief": item.game_brief,
+                "img_url": item.img_url
             }
             i += 1
     else:
@@ -117,9 +121,9 @@ def show_game(game_id):
                 "already_launched": launched,
                 "content_id": item.game_id,
                 "content_title": item.game_title,
-                "img_url": item.img_url,
                 "content_type": item.game_type,
-                "content_brief": item.game_brief
+                "content_brief": item.game_brief,
+                "img_url": item.img_url
             }
         }
     else:
