@@ -33,6 +33,7 @@ def create_app(config_class=Config):
     from manager.web_portal.web_portal import portal
     from manager.auth.auth_service import auth_service
     from manager.backstage.backstage import backstage
+    from manager.models import User
     app.register_blueprint(main)
     app.register_blueprint(list_service)
     app.register_blueprint(portal, url_prefix='/portal')
@@ -40,3 +41,4 @@ def create_app(config_class=Config):
     app.register_blueprint(backstage, url_prefix='/backstage')
 
     return app
+

@@ -2,11 +2,10 @@ import os
 import logging
 from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post
-from flask_login import login_required
 
 
 from manager.models import AvailableGamesForServers, GameServers, StreamList, \
-    GameList, datetime, ClientConnectionList, User, favorite_game_list
+    GameList, datetime, ClientConnectionList, User, Role
 from manager import db, Config
 
 SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
@@ -16,7 +15,6 @@ main = Blueprint('main', __name__)
 
 
 @main.route('/')
-@login_required
 def index():
     return "Welcome to the Compal VR Cloud Gaming"
 
@@ -122,7 +120,8 @@ def playing_game(game_id):
                             db.session.commit()
 
                             response['status'] = True
-                            response['msg'] = 'Succesfully allocate game server... connecting then launching game title...'
+                            response['msg'] = 'Succesfully allocate game server... ' \
+                                              'connecting then launching game title...'
                             response['game_server_ip'] = game_server_ip
                             break
 
@@ -220,10 +219,22 @@ def add_stream():
     if register_stream(stream_info):
         return {'status': True,
                 'msg': 'Successfully create streaming channel'}
-    return {
-        'status': False,
-        'msg': "Couldn't create streaming channel"
-    }
+    return {'status': False,
+            'msg': "Couldn't create streaming channel"}
+
+
+@main.route('/streaming/{stream_id}', methods=['DELETE'])
+def delete_stream(stream_id):
+    try:
+        StreamList.query.filter_by(id=stream_id).delete()
+        db.session.commit()
+    except Exception as e:
+        logging.debug(e)
+        return {'msg': 'Error while deleting, try again later...',
+                'success': False}
+
+    return {'msg': 'Channel deleted',
+            'success': True}
 
 
 @main.route('/download/<filename>')
@@ -238,9 +249,8 @@ def download(filename):
 @main.route('/db')
 def db_sync():
     db.create_all()
-    query = GameList.query.filter_by(game_id='410570').first()
-    print(query.users.append(User.query.filter_by(id=2).first()))
     db.session.commit()
+
     return "DB sync"
 
 
@@ -266,6 +276,9 @@ def add_game():
             'msg': 'Successfully add game to the list'}
 
 
+# """
+# The following is utility function
+# """
 def register_server(g_server_ip):
     """ register the game server to DB """
     query = GameServers.query.filter_by(server_ip=g_server_ip).first()  # if existed, update its status
@@ -281,16 +294,20 @@ def register_server(g_server_ip):
 
 
 def register_stream(stream_info):
-    new_channel = StreamList(
-        server_ip=stream_info['server_ip'],
-        client_ip=stream_info['client_ip'],
-        client_username=stream_info['client_username'],
-        stream_title=stream_info['stream_title'],
-        img_url='{0}/static/streams_icon/live_user_chiao622.jpg'.format(SERVER_ADDR),
-        stream_url=stream_info['stream_url'],
-        started_from=datetime.utcnow())
-    db.session.add(new_channel)
-    db.session.commit()
+    try:
+        new_channel = StreamList(
+            server_ip=stream_info['server_ip'],
+            client_ip=stream_info['client_ip'],
+            client_username=stream_info['client_username'],
+            stream_title=stream_info['stream_title'],
+            img_url='{0}/static/streams_icon/live_user_chiao622.jpg'.format(SERVER_ADDR),
+            stream_url=stream_info['stream_url'],
+            started_from=datetime.utcnow())
+        db.session.add(new_channel)
+        db.session.commit()
+    except Exception as e:
+        logging.debug(e)
+        return False
     return True
 
 
@@ -305,7 +322,7 @@ def add_server_games(games, server_ip):
 
 
 def update_status(query, connection_status):
-
+    """ update the connection status between game server and player """
     if connection_status == 'playing':
         logging.info('playing status update...')
         query.launch_time = datetime.utcnow()

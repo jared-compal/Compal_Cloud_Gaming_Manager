@@ -5,6 +5,7 @@
     <div class="stream__contents">
         <div class="contents games">
             <div class="list__title"> Game List</div>
+            {% if games is not none %}
             {% for key, game in games.items() %}
                 <div class="card">
                     <a href="/portal/games/{{ game.content_id }}" class="link">
@@ -18,9 +19,11 @@
                     </a>
                 </div>
             {% endfor %}
+            {% endif %}
         </div>
         <div class="contents streams">
             <div class="list__title"> Stream List</div>
+            {% if streams is not none %}
             {% for key, stream in streams.items() %}
                 <div class="card">
                     <a href="/portal/streams/{{ stream.content_id }}" class="link">
@@ -35,6 +38,7 @@
                     </a>
                 </div>
             {% endfor %}
+            {% endif %}
         </div>
     </div>
 {%  endblock %}
