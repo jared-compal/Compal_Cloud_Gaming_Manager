@@ -69,6 +69,7 @@ def unregister_game_server():
 
 @main.route('/games/<string:game_id>/launch', methods=['GET'])
 def playing_game(game_id):
+    logging.info('launch game')
     response = {
         'msg': '',
         'status': False
@@ -150,6 +151,7 @@ def resume_game():
 
 @main.route('/close', methods=['GET'])
 def close_game():
+    logging.info('closed request')
     data = {
         'status': True,
         'msg': 'Successfully close the game'
@@ -160,8 +162,11 @@ def close_game():
         req_data = {
             'client_ip': client_ip
         }
+        print(game_server)
         try:
+            print('http://{0}:8080/game-disconnection'.format(game_server.server_ip))
             game_server_res = post('http://{0}:8080/game-disconnection'.format(game_server.server_ip), data=req_data)
+            print(game_server_res)
         except Exception as e:
             logging.info("Error when closing game")
             logging.debug(e)

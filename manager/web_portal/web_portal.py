@@ -15,16 +15,14 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 def portal_page():
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()
-    # return render_template('index_.html', games=game_info.get('games'), streams=stream_info.get('streams'))
-    # print(url_for('portal.static'))
-    return render_template('base_test.html', games=game_info.get('games'), streams=stream_info.get('streams'))
+    return render_template('index_test.html', games=game_info.get('games'), streams=stream_info.get('streams'))
 
 
 @portal.route('/streams/<stream_id>')
 def portal_streams(stream_id):
     stream_info = get('{0}/streams/{1}'.format(SERVER_ADDR, stream_id)).json()
     if stream_info['status']:
-        return render_template('content_page.html', data=stream_info.get('stream'), type='stream')
+        return render_template('content_page_test.html', data=stream_info.get('stream'), type='stream')
     return redirect(url_for('portal.portal_page'), code=302)
 
 
@@ -32,7 +30,7 @@ def portal_streams(stream_id):
 def portal_games(game_id):
     game_info = get('{0}/games/{1}'.format(SERVER_ADDR, game_id)).json()
     if game_info['status']:
-        return render_template('content_page.html', data=game_info.get('game'), type='game')
+        return render_template('content_page_test.html', data=game_info.get('game'), type='game')
     return redirect(url_for('portal.portal_page'), code=302)
 
 

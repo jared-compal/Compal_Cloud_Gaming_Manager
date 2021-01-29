@@ -1,0 +1,91 @@
+{%  extends 'base_test.html' %}
+
+{%  block content %}
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"></li>
+                    <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"></li>
+                    <li data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"></li>
+                  </ol>
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                      <img src="{{ url_for('static', filename='/games_icon/gunjack_banner.png') }}" class="d-block w-100" alt="...">
+                      <div class="carousel-caption d-none d-md-block">
+                        <h5>ABOUT THIS GAME</h5>
+                        <p>Gunjack is the visually stunning best-selling VR game built from the ground up for virtual reality.</p>
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <img src="{{ url_for('static', filename='/games_icon/redout_banner.jpg') }}" class="d-block w-100" alt="...">
+                      <div class="carousel-caption d-none d-md-block">
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <img src="{{ url_for('static', filename='/games_icon/beatsaber_banner.jpg') }}" class="d-block w-100" alt="...">
+                      <div class="carousel-caption d-none d-md-block">
+                      </div>
+                    </div>
+                  </div>
+                  <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </a>
+                </div>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">近期遊玩</h1>
+    </div>
+    <div class="card-container container-md">
+    {% if games is not none %}
+    {% for key, game in games.items() %}
+
+        <div class="card" onclick="javascript:location.href='{{ url_for("portal.portal_games", game_id=game.content_id) }}'">
+          <img src="{{ game.img_url }}" class="card-img" alt="...">
+          <div class="card-body">
+              <div class="card-game-title">{{ game.content_title }}</div>
+              <div class="card-game-description">{{ game.content_type }}</div>
+          </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+         <h1 class="h2">直播串流</h1>
+    </div>
+    <div class="card-container container-md">
+    {% if streams is not none %}
+    {% for key, stream in streams.items() %}
+        <div class="card" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
+          <img src="{{ stream.img_url }}" class="card-img" alt="...">
+          <div class="card-body">
+              <div class="card-game-title">{{ stream.content_title }}</div>
+              <div class="card-game-description">{{ stream.player_info }}</div>
+          </div>
+        </div>
+
+    {% endfor %}
+    {% endif %}
+    </div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">新上市</h1>
+    </div>
+    <div class="card-container container-md">
+    {% if games is not none %}
+    {% for key, game in games.items() %}
+        <div class="card">
+          <img src="{{ url_for("portal.static", filename="/pics/EX_Pic-1_42x.png") }}" class="card-img" alt="...">
+          <div class="card-body">
+              <div class="card-game-title">{{ game.content_title }}</div>
+              <div class="card-game-description">{{ game.content_type }}</div>
+          </div>
+        </div>
+
+    {% endfor %}
+    {% endif %}
+    </div>
+
+{%  endblock %}

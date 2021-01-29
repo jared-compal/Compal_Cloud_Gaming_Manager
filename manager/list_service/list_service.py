@@ -3,7 +3,9 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_manager, current_user
 
 from manager.models import StreamList, GameList, ClientConnectionList
+from manager.config import Config
 
+SERVER_IP = 'http://' + Config.IP + ':5000'
 list_service = Blueprint('list_service', __name__)
 
 
@@ -93,7 +95,7 @@ def get_contents(content_type):
                     "content_id": item.id,
                     "content_title": item.stream_title,
                     "content_brief": item.stream_title,
-                    "img_url": item.img_url,
+                    "img_url": SERVER_IP + item.img_url,
                     "content_url": item.stream_url,
                     "player_info": item.client_username,
                     "player_id": item.client_username
@@ -117,7 +119,7 @@ def get_contents(content_type):
                     "content_title": item.game_title,
                     "content_type": item.game_type,
                     "content_brief": item.game_brief,
-                    "img_url": item.img_url
+                    "img_url": SERVER_IP + item.img_url
                 }
                 data['msg'] = 'Game list...'
             else:
