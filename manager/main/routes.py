@@ -97,34 +97,46 @@ def playing_game(game_id):
                                   'Please play this game later.'
                 for game_server in servers:  # loop through game server list and break once game server is available
                     game_server_ip = game_server.server_ip
+                    logging.info('allocate game server: ')
+                    logging.info(game_server_ip)
                     req_data = {
                         # "user_id": user_id,
                         "player_ip": player_ip,
                         "game_title": game.game_title,
                         "game_id": game_id
                     }
-                    logging.info('allocate game server: ')
-                    logging.info(game_server)
-                    logging.info(game_server_ip, req_data)
-                    try:
-                        game_server_res = post('http://{0}:8080/game-connection'
-                                               .format(game_server_ip), data=req_data).json()
-                    except Exception as inst:
-                        logging.debug('Game server error')
-                        logging.debug(inst)
-                        game_server.is_available = False
-                        db.session.commit()
-                    else:
-                        if game_server_res['launch success']:
-                            game_server.is_available = False
-                            game_server.client_ip = player_ip
-                            db.session.commit()
+                    game_server_res = post('http://{0}:8080/game-connection'
+                                           .format(game_server_ip), data=req_data).json()
 
-                            response['status'] = True
-                            response['msg'] = 'Succesfully allocate game server... ' \
-                                              'connecting then launching game title...'
-                            response['game_server_ip'] = game_server_ip
-                            break
+                    if game_server_res['launch success']:
+                        game_server.is_available = False
+                        game_server.client_ip = player_ip
+                        db.session.commit()
+
+                        response['status'] = True
+                        response['msg'] = 'Succesfully allocate game server... ' \
+                                          'connecting then launching game title...'
+                        response['game_server_ip'] = game_server_ip
+                        break
+                    # try:
+                    #     game_server_res = post('http://{0}:8080/game-connection'
+                    #                            .format(game_server_ip), data=req_data).json()
+                    # except Exception as inst:
+                    #     logging.debug('Game server error')
+                    #     logging.debug(inst)
+                    #     game_server.is_available = False
+                    #     db.session.commit()
+                    # else:
+                    #     if game_server_res['launch success']:
+                    #         game_server.is_available = False
+                    #         game_server.client_ip = player_ip
+                    #         db.session.commit()
+                    #
+                    #         response['status'] = True
+                    #         response['msg'] = 'Succesfully allocate game server... ' \
+                    #                           'connecting then launching game title...'
+                    #         response['game_server_ip'] = game_server_ip
+                    #         break
 
     resp = jsonify(response)
     resp.headers['Access-Control-Allow-Origin'] = '*'

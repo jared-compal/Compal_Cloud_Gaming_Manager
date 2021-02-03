@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 # from flask_wtf.csrf import CSRFProtect
-from manager.config import Config
+from manager.config import Config, Local
 
 # MySql database
 db = SQLAlchemy()
@@ -12,9 +12,12 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 
 
-def create_app(config_class=Config):
+def create_app(config_option=1):
+    config_class = Local
+    if config_option == 2:
+        config_class = Config
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
 
     db.init_app(app)
     bcrypt.init_app(app)
