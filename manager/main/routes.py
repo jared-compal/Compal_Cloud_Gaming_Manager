@@ -1,7 +1,7 @@
 import os
 import logging
 from flask import Blueprint, request, jsonify, send_from_directory
-from requests import post
+from requests import post, get
 
 
 from manager.models import AvailableGamesForServers, GameServers, StreamList, \
@@ -77,9 +77,25 @@ def playing_game(game_id):
     player_ip = request.remote_addr
     logging.info(f'Player {player_ip} requests launching game: ')
     check_client_status = GameServers.query.filter_by(client_ip=player_ip).first()
-    if check_client_status:
+    check_connection_status = ClientConnectionList.query\
+        .filter_by(client_ip=player_ip, connection_status='playing').first()
+
+    if check_client_status and check_connection_status:
         response['msg'] = 'Please close previous game first'
     else:
+        # error handling
+        if check_client_status and check_connection_status is None:
+            error_server_ip = check_client_status.server_ip
+            try:
+                res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=10)
+            except Exception as e:
+                logging.debug(e)
+                logging.debug('Game server no response... not available...')
+                check_client_status.is_available = False
+                check_client_status.client_ip = None
+                db.session.commit()
+
+            logging.info(res)
         # choose game server that has the game installed and is also available
         servers = GameServers.query\
             .join(AvailableGamesForServers,
@@ -105,40 +121,29 @@ def playing_game(game_id):
                         "game_title": game.game_title,
                         "game_id": game_id
                     }
-                    game_server_res = post('http://{0}:8080/game-connection'
-                                           .format(game_server_ip), data=req_data).json()
-
-                    if game_server_res['launch success']:
+                    try:
+                        server_res = post('http://{0}:8080/game-connection'
+                                          .format(game_server_ip), data=req_data)
+                        game_server_res = server_res.json()
+                    except Exception as inst:
+                        logging.debug('Game server error')
+                        logging.debug(inst)
                         game_server.is_available = False
-                        game_server.client_ip = player_ip
                         db.session.commit()
+                    else:
+                        if game_server_res['launch success']:
+                            game_server.is_available = False
+                            game_server.client_ip = player_ip
+                            db.session.commit()
 
-                        response['status'] = True
-                        response['msg'] = 'Succesfully allocate game server... ' \
-                                          'connecting then launching game title...'
-                        response['game_server_ip'] = game_server_ip
-                        break
-                    # try:
-                    #     game_server_res = post('http://{0}:8080/game-connection'
-                    #                            .format(game_server_ip), data=req_data).json()
-                    # except Exception as inst:
-                    #     logging.debug('Game server error')
-                    #     logging.debug(inst)
-                    #     game_server.is_available = False
-                    #     db.session.commit()
-                    # else:
-                    #     if game_server_res['launch success']:
-                    #         game_server.is_available = False
-                    #         game_server.client_ip = player_ip
-                    #         db.session.commit()
-                    #
-                    #         response['status'] = True
-                    #         response['msg'] = 'Succesfully allocate game server... ' \
-                    #                           'connecting then launching game title...'
-                    #         response['game_server_ip'] = game_server_ip
-                    #         break
+                            response['status'] = True
+                            response['msg'] = 'Succesfully allocate game server... ' \
+                                              'connecting then launching game title...'
+                            response['game_server_ip'] = game_server_ip
+                            break
 
     resp = jsonify(response)
+    logging.info(response)
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
 
@@ -206,6 +211,11 @@ def update_connection_status():
     query = ClientConnectionList.query.filter_by(client_ip=client_ip, server_ip=server_ip, game_id=game_id).first()
     logging.info('Update connection status: ')
     logging.info(f'client ip: {client_ip}, server ip: {server_ip}, game id: {game_id}, status: {connection_status}')
+
+    if connection_status == 'timeout':
+        register_server(server_ip)
+        return 'Client connection timeout... '
+
     if query is None:
         logging.info('new connection...')
         new_connection = ClientConnectionList(
@@ -217,6 +227,7 @@ def update_connection_status():
         )
         db.session.add(new_connection)
         db.session.commit()
+
     else:
         logging.info('status update - ' + connection_status)
         update_status(query, connection_status)
@@ -317,7 +328,7 @@ def register_stream(stream_info):
             client_ip=stream_info['client_ip'],
             client_username=stream_info['client_username'],
             stream_title=stream_info['stream_title'],
-            img_url='{0}/static/streams_icon/live_user_chiao622.jpg'.format(SERVER_ADDR),
+            img_url='/static/streams_icon/live_user_chiao622.jpg',
             stream_url=stream_info['stream_url'],
             started_from=datetime.utcnow())
         db.session.add(new_channel)
