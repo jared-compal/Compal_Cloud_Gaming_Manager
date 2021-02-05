@@ -238,9 +238,9 @@ def download(filename):
 @main.route('/db')
 def db_sync():
     db.create_all()
-    query = GameList.query.filter_by(game_id='410570').first()
-    print(query.users.append(User.query.filter_by(id=2).first()))
-    db.session.commit()
+    # query = GameList.query.filter_by(game_id='410570').first()
+    # print(query.users.append(User.query.filter_by(id=2).first()))
+    # db.session.commit()
     return "DB sync"
 
 
