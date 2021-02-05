@@ -2,9 +2,10 @@ import logging
 from flask import Blueprint, jsonify, request, current_app
 from flask_login import login_manager, current_user
 
+from manager import Config
 from manager.models import StreamList, GameList, ClientConnectionList
 
-
+SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 list_service = Blueprint('list_service', __name__)
 
 
@@ -78,7 +79,6 @@ def favorite_list():
 
 
 def get_contents(content_type):
-    server_ip = 'http://' + current_app.config['IP'] + ':5000'
     data = {
         "status": True,
         content_type: {
@@ -95,7 +95,7 @@ def get_contents(content_type):
                     "content_id": item.id,
                     "content_title": item.stream_title,
                     "content_brief": item.stream_title,
-                    "img_url": server_ip + item.img_url,
+                    "img_url": SERVER_ADDR + item.img_url,
                     "content_url": item.stream_url,
                     "player_info": item.client_username,
                     "player_id": item.client_username
@@ -119,7 +119,7 @@ def get_contents(content_type):
                     "content_title": item.game_title,
                     "content_type": item.game_type,
                     "content_brief": item.game_brief,
-                    "img_url": server_ip + item.img_url
+                    "img_url": SERVER_ADDR + item.img_url
                 }
                 data['msg'] = 'Game list...'
             else:
@@ -128,7 +128,6 @@ def get_contents(content_type):
 
 
 def get_content(content_type, content_id):
-    server_ip = 'http://' + current_app.config['IP'] + ':5000'
     data = {
         "status": True,
         content_type: {
@@ -140,7 +139,7 @@ def get_content(content_type, content_id):
             data[content_type]["content_id"] = item.id
             data[content_type]["content_title"] = item.stream_title
             data[content_type]["content_brief"] = item.stream_title
-            data[content_type]["img_url"] = server_ip + item.img_url
+            data[content_type]["img_url"] = SERVER_ADDR + item.img_url
             data[content_type]["content_url"] = item.stream_url
             data[content_type]["player_info"] = item.client_username
             data[content_type]["player_id"] = item.client_username
@@ -160,7 +159,7 @@ def get_content(content_type, content_id):
             data[content_type]["content_title"] = item.game_title
             data[content_type]["content_type"] = item.game_type
             data[content_type]["content_brief"] = item.game_brief
-            data[content_type]["img_url"] = server_ip + item.img_url
+            data[content_type]["img_url"] = SERVER_ADDR + item.img_url
         else:
             data["status"] = False
             data["msg"] = "Couldn't find the specific stream"

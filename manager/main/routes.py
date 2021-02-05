@@ -8,6 +8,7 @@ from manager.models import AvailableGamesForServers, GameServers, StreamList, \
     GameList, datetime, ClientConnectionList, User, Role
 from manager import db, Config
 
+
 SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 FORMAT = "%(asctime)s -%(levelname)s : %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
@@ -85,17 +86,8 @@ def playing_game(game_id):
     else:
         # error handling
         if check_client_status and check_connection_status is None:
-            error_server_ip = check_client_status.server_ip
-            try:
-                res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=10)
-            except Exception as e:
-                logging.debug(e)
-                logging.debug('Game server no response... not available...')
-                check_client_status.is_available = False
-                check_client_status.client_ip = None
-                db.session.commit()
+            launch_error_handling(check_client_status)
 
-            logging.info(res)
         # choose game server that has the game installed and is also available
         servers = GameServers.query\
             .join(AvailableGamesForServers,
@@ -123,7 +115,7 @@ def playing_game(game_id):
                     }
                     try:
                         server_res = post('http://{0}:8080/game-connection'
-                                          .format(game_server_ip), data=req_data)
+                                          .format(game_server_ip), data=req_data, timeout=8)
                         game_server_res = server_res.json()
                     except Exception as inst:
                         logging.debug('Game server error')
@@ -366,3 +358,16 @@ def update_status(query, connection_status):
         game_server.client_ip = None
     query.connection_status = connection_status
     db.session.commit()
+
+
+def launch_error_handling(check_client_status):
+    error_server_ip = check_client_status.server_ip
+    try:
+        res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=10)
+    except Exception as e:
+        logging.debug(e)
+        logging.debug(res)
+        logging.debug('Game server no response... not available...')
+        check_client_status.is_available = False
+        check_client_status.client_ip = None
+        db.session.commit()
