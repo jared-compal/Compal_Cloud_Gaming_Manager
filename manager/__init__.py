@@ -12,10 +12,8 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 
 
-def create_app(config_option=1):
-    config_class = Local
-    if config_option == 2:
-        config_class = Config
+def create_app():
+    config_class = Config
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -42,6 +40,5 @@ def create_app(config_option=1):
     app.register_blueprint(portal, url_prefix='/portal')
     app.register_blueprint(auth_service)
     app.register_blueprint(backstage, url_prefix='/backstage')
-
     return app
 

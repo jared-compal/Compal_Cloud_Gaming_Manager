@@ -84,7 +84,7 @@ def playing_game(game_id):
     if check_client_status and check_connection_status:
         response['msg'] = 'Please close previous game first'
     else:
-        # error handling
+        # error handling - has allocated game server to client but game server didn't launched game
         if check_client_status and check_connection_status is None:
             launch_error_handling(check_client_status)
 
@@ -149,7 +149,6 @@ def resume_game():
     }
     client_ip = request.remote_addr
     game_connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
-    logging.info(game_connection)
     if game_connection is not None:
         data['game_server_ip'] = game_connection.server_ip
     else:
@@ -358,16 +357,18 @@ def update_status(query, connection_status):
         game_server.client_ip = None
     query.connection_status = connection_status
     db.session.commit()
+    return
 
 
 def launch_error_handling(check_client_status):
     error_server_ip = check_client_status.server_ip
     try:
-        res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=10)
-    except Exception as e:
-        logging.debug(e)
-        logging.debug(res)
-        logging.debug('Game server no response... not available...')
         check_client_status.is_available = False
         check_client_status.client_ip = None
         db.session.commit()
+        res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=5)
+    except Exception as e:
+        logging.debug(e)
+        logging.debug('Game server no response... not available...')
+    finally:
+        logging.debug(res)
