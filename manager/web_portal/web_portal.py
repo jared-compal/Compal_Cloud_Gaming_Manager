@@ -1,11 +1,16 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
-from requests import get
-from flask_login import login_user, current_user, logout_user, login_required
+import logging
 
-from manager import bcrypt, db
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from requests import get, post
+from flask_jwt_extended import jwt_required, get_jwt, create_access_token, set_access_cookies, unset_jwt_cookies
+# from flask_login import login_user, current_user, logout_user, login_required
+
+from manager import bcrypt, db, Config
 from manager.web_portal.forms import RegistrationForm, LoginForm
 from manager.models import User
+from manager.auth.auth_service import user_authenticate
 
+SERVER_ADDR = Config.SERVER_ADDR
 portal = Blueprint('portal', __name__, template_folder='templates', static_folder='static')
 
 
@@ -36,25 +41,40 @@ def portal_games(game_id):
 
 
 @portal.route("/login", methods=['GET', 'POST'])
+@jwt_required(optional=True)
 def login_page():
-    if current_user.is_authenticated:
+    is_authenticated = get_jwt()
+    if is_authenticated:
         return redirect(url_for('portal.portal_page'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('portal.portal_page'))
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
+        username = form.username.data
+        password = form.password.data
+        try:
+            user = User.query.filter_by(username=username).one_or_none()
+            if user and bcrypt.check_password_hash(user.password, password):
+                access_token = create_access_token(identity=user)
+                resp = redirect(url_for('portal.portal_page'))
+                next_page = request.args.get('next')
+                if next_page:
+                    resp = redirect(next_page)
+                set_access_cookies(resp, access_token)
+                print('validate user')
+                return resp
+            else:
+                flash('Login Unsuccessful. Please check username and password', 'danger')
+        except Exception as inst:
+            logging.debug(inst)
+
     return render_template('login.html', title='Login', form=form)
 
 
 @portal.route('/register', methods=['GET', 'POST'])
+@jwt_required(optional=True)
 def register_page():
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
+    is_authenticated = get_jwt()
+    if is_authenticated:
+        return redirect(url_for('portal.portal_page'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -68,11 +88,7 @@ def register_page():
 
 @portal.route("/logout")
 def logout():
-    logout_user()
-    return redirect(url_for('portal.portal_page'))
+    resp = redirect(url_for('portal.login_page'))
+    unset_jwt_cookies(resp)
+    return resp
 
-
-# @portal.route("/account")
-# @login_required
-# def account():
-#     return render_template('account.html', title='Account')

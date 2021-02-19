@@ -1,13 +1,17 @@
 from datetime import datetime
-
-from flask_login import UserMixin
-
-from manager import db, login_manager
+from flask import jsonify
+from manager import db, jwt
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user.id
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.query.filter_by(id=identity).one_or_none()
 
 
 favorite_game_list = \
@@ -74,7 +78,7 @@ class ClientConnectionList(db.Model):
                                 default=0)
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)

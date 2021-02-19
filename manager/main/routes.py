@@ -9,7 +9,7 @@ from manager.models import AvailableGamesForServers, GameServers, StreamList, \
 from manager import db, Config
 
 
-SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
+SERVER_ADDR = Config.SERVER_ADDR
 FORMAT = "%(asctime)s -%(levelname)s : %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 main = Blueprint('main', __name__)

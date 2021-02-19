@@ -1,6 +1,5 @@
 import logging
 from flask import Blueprint, jsonify, request, current_app
-from flask_login import login_manager, current_user
 
 from manager import Config
 from manager.models import StreamList, GameList, ClientConnectionList

@@ -275,21 +275,53 @@ h4 {
   margin: 10px 0px;
 }
 .btn-outline-success:active {
-    color: #24242D;
-    background-color: #A0EF1D;
-    border-color: #A0EF1D;
+  color: #24242D;
+  background-color: #A0EF1D;
+  border-color: #A0EF1D;
 }
 .btn-outline-success:hover {
-    color: #24242D;
-    background-color: #A0EF1D;
-    border-color: #A0EF1D;
+  color: #24242D;
+  background-color: #A0EF1D;
+  border-color: #A0EF1D;
 }
 
 .btn-outline-success {
   color: #A0EF1D;
   border-color: #A0EF1D;
+
+}
+.search-btn {
   border-radius: 25px;
 }
 #input-search {
   border-radius: 40px;
+}
+
+legend{
+  font-size: 22px;
+  font-weight: bold;
+  padding: 20px;
+  color: white;
+}
+.login-container {
+  text-align: center;
+}
+.login-div {
+  margin: 0 auto;
+  padding: 20px 0px;
+  width: 350px;
+  justify-content: space-around;
+}
+.form-group {
+    display: grid;
+    margin: 5px 0px;
+    justify-items: center;
+}
+label {
+  color: white;
+}
+.form-control-lg {
+  min-height: calc( 1.5rem + 2px);
+  padding: .1rem .75rem;
+  text-align: center;
 }
