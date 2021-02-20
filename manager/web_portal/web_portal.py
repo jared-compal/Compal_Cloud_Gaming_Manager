@@ -1,14 +1,13 @@
 import logging
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
-from requests import get, post
-from flask_jwt_extended import jwt_required, get_jwt, create_access_token, set_access_cookies, unset_jwt_cookies
-# from flask_login import login_user, current_user, logout_user, login_required
+from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response
+from requests import get
+from flask_jwt_extended import jwt_required, get_jwt, create_access_token, \
+    set_access_cookies, unset_jwt_cookies, get_current_user, verify_jwt_in_request
 
 from manager import bcrypt, db, Config
 from manager.web_portal.forms import RegistrationForm, LoginForm
 from manager.models import User
-from manager.auth.auth_service import user_authenticate
 
 SERVER_ADDR = Config.SERVER_ADDR
 portal = Blueprint('portal', __name__, template_folder='templates', static_folder='static')
@@ -16,27 +15,40 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 
 @portal.route('/')
 def portal_page():
-    server_address = 'http://{0}:5000'.format(current_app.config['IP'])
-    stream_info = get('{0}/streams'.format(server_address)).json()
-    game_info = get('{0}/games'.format(server_address)).json()
-    return render_template('index_test.html', games=game_info.get('games'), streams=stream_info.get('streams'))
+    identity = None
+    unset = False
+    try:
+        verify_jwt_in_request(optional=True)
+        if get_current_user():
+            identity = get_current_user()
+            print(identity.username, identity.roles[0].name)
+    except Exception as inst:
+        print(inst)
+        unset = True
+
+    stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
+    game_info = get('{0}/games'.format(SERVER_ADDR)).json()
+    resp = make_response(render_template(
+        'index.html', games=game_info.get('games'), streams=stream_info.get('streams'), identity=identity
+    ))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
 
 
 @portal.route('/streams/<stream_id>')
 def portal_streams(stream_id):
-    server_address = 'http://{0}:5000'.format(current_app.config['IP'])
-    stream_info = get('{0}/streams/{1}'.format(server_address, stream_id)).json()
+    stream_info = get('{0}/streams/{1}'.format(SERVER_ADDR, stream_id)).json()
     if stream_info['status']:
-        return render_template('content_page_test.html', data=stream_info.get('stream'), type='stream')
+        return render_template('content_page.html', data=stream_info.get('stream'), type='stream')
     return redirect(url_for('portal.portal_page'), code=302)
 
 
 @portal.route('/games/<game_id>')
 def portal_games(game_id):
-    server_address = 'http://{0}:5000'.format(current_app.config['IP'])
-    game_info = get('{0}/games/{1}'.format(server_address, game_id)).json()
+    game_info = get('{0}/games/{1}'.format(SERVER_ADDR, game_id)).json()
     if game_info['status']:
-        return render_template('content_page_test.html', data=game_info.get('game'), type='game')
+        return render_template('content_page.html', data=game_info.get('game'), type='game')
     return redirect(url_for('portal.portal_page'), code=302)
 
 
@@ -59,7 +71,6 @@ def login_page():
                 if next_page:
                     resp = redirect(next_page)
                 set_access_cookies(resp, access_token)
-                print('validate user')
                 return resp
             else:
                 flash('Login Unsuccessful. Please check username and password', 'danger')

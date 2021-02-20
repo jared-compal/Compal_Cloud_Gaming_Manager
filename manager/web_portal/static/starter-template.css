@@ -325,3 +325,19 @@ label {
   padding: .1rem .75rem;
   text-align: center;
 }
+.user-icon {
+    width: 48px;
+    background-color: currentColor;
+    border-radius: 25px;
+}
+#dropdown-menu-2 {
+    left: -50%;
+    top: 130%;
+    text-align: center;
+    min-width: 8rem;
+}
+#dropdown-menu-2 div {
+  font-size: 18px;
+  font-weight: Bold;
+  color: #4A4E64;
+}

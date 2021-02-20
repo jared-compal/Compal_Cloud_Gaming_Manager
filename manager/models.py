@@ -14,6 +14,12 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return User.query.filter_by(id=identity).one_or_none()
 
 
+@jwt.expired_token_loader
+def my_expired_token_callback(jwt_header, jwt_payload):
+
+    return jsonify(code="dave", err="I can't let you do that"), 401
+
+
 favorite_game_list = \
     db.Table('myFavorite',
              db.Column('user_id', db.Integer, db.ForeignKey('user.id')),

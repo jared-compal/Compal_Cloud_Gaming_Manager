@@ -38,10 +38,12 @@ def create_app():
     from manager.auth.auth_service import auth_service
     from manager.backstage.backstage import backstage
     from manager.models import User
+    from manager.streaming.streaming_service import streaming_service
     app.register_blueprint(main)
     app.register_blueprint(list_service)
     app.register_blueprint(portal, url_prefix='/portal')
     app.register_blueprint(auth_service)
     app.register_blueprint(backstage, url_prefix='/backstage')
+    app.register_blueprint(streaming_service, url_prefix='/streaming')
     return app
 

@@ -2,9 +2,9 @@ import os
 import logging
 from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post, get
+from flask_jwt_extended import jwt_required
 
-
-from manager.models import AvailableGamesForServers, GameServers, StreamList, \
+from manager.models import AvailableGamesForServers, GameServers, \
     GameList, datetime, ClientConnectionList, User, Role
 from manager import db, Config
 
@@ -226,36 +226,6 @@ def update_connection_status():
     return 'Successfully update status'
 
 
-@main.route('/streaming', methods=['POST'])
-def add_stream():
-    stream_info = {
-        'server_ip': request.form.get('server_ip', type=str),
-        'stream_title': request.form.get('stream_title', type=str),
-        'client_ip': request.form.get('player_ip', type=str),
-        'stream_url': request.form.get('stream_url', type=str),
-        'client_username': request.form.get('player_username', type=str)
-    }
-    if register_stream(stream_info):
-        return {'status': True,
-                'msg': 'Successfully create streaming channel'}
-    return {'status': False,
-            'msg': "Couldn't create streaming channel"}
-
-
-@main.route('/streaming/{stream_id}', methods=['DELETE'])
-def delete_stream(stream_id):
-    try:
-        StreamList.query.filter_by(id=stream_id).delete()
-        db.session.commit()
-    except Exception as e:
-        logging.debug(e)
-        return {'msg': 'Error while deleting, try again later...',
-                'success': False}
-
-    return {'msg': 'Channel deleted',
-            'success': True}
-
-
 @main.route('/download/<filename>')
 def download(filename):
     dir_path = os.path.join(main.root_path, 'download')
@@ -271,13 +241,6 @@ def db_sync():
     db.session.commit()
 
     return "DB sync"
-
-
-@main.route('/clean')
-def clean_streams():
-    StreamList.query.delete()
-    db.session.commit()
-    return 'table cleaned'
 
 
 @main.route('/createGame', methods=['POST'])
@@ -310,24 +273,6 @@ def register_server(g_server_ip):
         new_server = GameServers(server_ip=g_server_ip, last_connection_at=datetime.utcnow())
         db.session.add(new_server)
         db.session.commit()
-
-
-def register_stream(stream_info):
-    try:
-        new_channel = StreamList(
-            server_ip=stream_info['server_ip'],
-            client_ip=stream_info['client_ip'],
-            client_username=stream_info['client_username'],
-            stream_title=stream_info['stream_title'],
-            img_url='/static/streams_icon/live_user_chiao622.jpg',
-            stream_url=stream_info['stream_url'],
-            started_from=datetime.utcnow())
-        db.session.add(new_channel)
-        db.session.commit()
-    except Exception as e:
-        logging.debug(e)
-        return False
-    return True
 
 
 def add_server_games(games, server_ip):
@@ -367,8 +312,8 @@ def launch_error_handling(check_client_status):
         check_client_status.client_ip = None
         db.session.commit()
         res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=5)
+        logging.debug(res)
     except Exception as e:
         logging.debug(e)
         logging.debug('Game server no response... not available...')
-    finally:
-        logging.debug(res)
+

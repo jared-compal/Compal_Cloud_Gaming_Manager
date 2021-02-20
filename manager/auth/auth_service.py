@@ -1,38 +1,33 @@
-from flask import Blueprint, request, redirect, url_for, jsonify
-from flask_jwt_extended import current_user, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, get_current_user
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import current_user, create_access_token, jwt_required, get_jwt_identity
 
-from manager import bcrypt
+from manager import bcrypt, db
 from manager.models import User
 
 auth_service = Blueprint('auth_service', __name__)
 
 
-@auth_service.route('/user_login', methods=['GET', 'POST'])
+@auth_service.route('/user_login', methods=['POST'])
 def user_login():
-    if request.method == 'POST':
-        username = request.form.get("username", None)
-        password = request.form.get("password", None)
-        return user_authenticate(username, password)
-    else:
-        return {
-            'status': False,
-            'msg': 'Please login first to access cloud platform resources'
-        }
+    username = request.form.get("username", None)
+    password = request.form.get("password", None)
+    return user_authenticate(username, password)
 
 
 @auth_service.route("/user_logout")
 def user_logout():
-    resp = jsonify({
+    return jsonify({
         "status": True,
-        "msg": "Successfully log out user"
+        "msg": "Successfully log out user",
+        "access_token": None
     })
-    unset_jwt_cookies(resp)
-    return resp
 
 
 @auth_service.route('/user_register', methods=['POST'])
 def user_register():
-    return 'Under construction'
+    username = request.form.get("username", None)
+    password = request.form.get("password", None)
+    return validate_username(username, password)
 
 
 @auth_service.route('/protected')
@@ -44,19 +39,41 @@ def protected_content():
     )
 
 
+@auth_service.route('/refresh', methods=['GET'])
+@jwt_required(refresh=True)
+def refresh_token():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
+
+
 def user_authenticate(username, password):
     user = User.query.filter_by(username=username).one_or_none()
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=user)
-        resp = jsonify({
+        return jsonify({
             "status": True,
-            "msg": "Successfully log in user"
+            "msg": "Successfully log in user",
+            "access_token": access_token
         })
-        set_access_cookies(resp, access_token)
-        print('validate user')
-        return resp
     else:
         return jsonify({
             'status': False,
             'msg': 'Login Unsuccessful. Please check username and password'
         })
+
+
+def validate_username(self, username, password):
+    msg = "That username is taken. Please choose a different one."
+    status = False
+    if not User.query.filter_by(username=username).first():
+        msg = "Successfully create user"
+        status = True
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user = User(username=username, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+    return jsonify({
+        "status": status,
+        "msg": msg
+    })
