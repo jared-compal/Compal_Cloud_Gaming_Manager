@@ -58,11 +58,14 @@
     {% if streams is not none %}
     {% for key, stream in streams.items() %}
         <div class="card" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
-          <img src="{{ stream.img_url }}" class="card-img" alt="...">
-          <div class="card-body">
-              <div class="card-game-title">{{ stream.content_title }}</div>
-              <div class="card-game-description">{{ stream.player_info }}</div>
-          </div>
+            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted"}' >
+                <source src="{{ stream.content_url }}" type="application/x-mpegURL" />
+            </video>
+
+            <div class="card-body">
+                <div class="card-game-title">{{ stream.content_title }}</div>
+                <div class="card-game-description">{{ stream.player_info }}</div>
+            </div>
         </div>
 
     {% endfor %}

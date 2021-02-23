@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request
 
 from manager import Config
 from manager.models import StreamList, GameList, ClientConnectionList
@@ -95,7 +95,7 @@ def get_contents(content_type):
                     "content_title": item.stream_title,
                     "content_brief": item.stream_title,
                     "img_url": SERVER_ADDR + item.img_url,
-                    "content_url": item.stream_url,
+                    "content_url": item.video_source_url,
                     "player_info": item.client_username,
                     "player_id": item.client_username
                 }
@@ -139,7 +139,7 @@ def get_content(content_type, content_id):
             data[content_type]["content_title"] = item.stream_title
             data[content_type]["content_brief"] = item.stream_title
             data[content_type]["img_url"] = SERVER_ADDR + item.img_url
-            data[content_type]["content_url"] = item.stream_url
+            data[content_type]["content_url"] = item.video_source_url
             data[content_type]["player_info"] = item.client_username
             data[content_type]["player_id"] = item.client_username
         else:

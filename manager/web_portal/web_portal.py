@@ -15,17 +15,7 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 
 @portal.route('/')
 def portal_page():
-    identity = None
-    unset = False
-    try:
-        verify_jwt_in_request(optional=True)
-        if get_current_user():
-            identity = get_current_user()
-            print(identity.username, identity.roles[0].name)
-    except Exception as inst:
-        print(inst)
-        unset = True
-
+    identity, unset = is_authenticated()
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()
     resp = make_response(render_template(
@@ -38,25 +28,36 @@ def portal_page():
 
 @portal.route('/streams/<stream_id>')
 def portal_streams(stream_id):
+    identity, unset = is_authenticated()
     stream_info = get('{0}/streams/{1}'.format(SERVER_ADDR, stream_id)).json()
     if stream_info['status']:
-        return render_template('content_page.html', data=stream_info.get('stream'), type='stream')
+        resp = make_response(render_template(
+            'content_page.html', data=stream_info.get('stream'), type='stream', identity=identity
+        ))
+        if unset:
+            unset_jwt_cookies(resp)
+        return resp
     return redirect(url_for('portal.portal_page'), code=302)
 
 
 @portal.route('/games/<game_id>')
 def portal_games(game_id):
+    identity, unset = is_authenticated()
     game_info = get('{0}/games/{1}'.format(SERVER_ADDR, game_id)).json()
     if game_info['status']:
-        return render_template('content_page.html', data=game_info.get('game'), type='game')
+        resp = make_response(render_template(
+            'content_page.html', data=game_info.get('game'), type='game', identity=identity
+        ))
+        if unset:
+            unset_jwt_cookies(resp)
+        return resp
     return redirect(url_for('portal.portal_page'), code=302)
 
 
 @portal.route("/login", methods=['GET', 'POST'])
-@jwt_required(optional=True)
 def login_page():
-    is_authenticated = get_jwt()
-    if is_authenticated:
+    identity, unset = is_authenticated()
+    if identity:
         return redirect(url_for('portal.portal_page'))
     form = LoginForm()
     if form.validate_on_submit():
@@ -76,15 +77,16 @@ def login_page():
                 flash('Login Unsuccessful. Please check username and password', 'danger')
         except Exception as inst:
             logging.debug(inst)
-
-    return render_template('login.html', title='Login', form=form)
+    resp = make_response(render_template('login.html', title='Login', form=form))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
 
 
 @portal.route('/register', methods=['GET', 'POST'])
-@jwt_required(optional=True)
 def register_page():
-    is_authenticated = get_jwt()
-    if is_authenticated:
+    identity, unset = is_authenticated()
+    if identity:
         return redirect(url_for('portal.portal_page'))
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -94,7 +96,10 @@ def register_page():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('portal.login_page'))
-    return render_template('register.html', title='Register', form=form)
+    resp = make_response(render_template('register.html', title='Register', form=form))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
 
 
 @portal.route("/logout")
@@ -103,3 +108,16 @@ def logout():
     unset_jwt_cookies(resp)
     return resp
 
+
+def is_authenticated():
+    unset = False
+    try:
+        verify_jwt_in_request(optional=True)
+        if get_current_user():
+            identity = get_current_user()
+            print(identity.username, identity.roles[0].name)
+            return identity, unset
+    except Exception as inst:
+        print(inst)
+        unset = True
+    return None, unset

@@ -266,8 +266,11 @@ h4 {
   font-weight: bold;
   line-height: 3rem;
 }
+.content__info {
+  padding: 0px 50px;
+}
 .games {
-  border-bottom: ridge;
+  margin: auto;
   margin-bottom: 40px;
   width: fit-content;
 }
@@ -340,4 +343,7 @@ label {
   font-size: 18px;
   font-weight: Bold;
   color: #4A4E64;
+}
+.stream-video {
+  justify-content: space-around;
 }

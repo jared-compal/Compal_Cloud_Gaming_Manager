@@ -17,7 +17,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
 
-    return jsonify(code="dave", err="I can't let you do that"), 401
+    return jsonify(code="Expired", err="Token expired, please refresh token"), 401
 
 
 favorite_game_list = \
@@ -52,11 +52,12 @@ class StreamList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_ip = db.Column(db.String(32), unique=True, nullable=False)
     client_ip = db.Column(db.String(32), unique=True, nullable=False)
-    client_username = db.Column(db.String(62), nullable=True)
-    stream_title = db.Column(db.String(64), nullable=False)
+    client_username = db.Column(db.String(64), nullable=True)
+    stream_title = db.Column(db.String(128), nullable=False)
     num_of_audience = db.Column(db.Integer, default=0)
-    img_url = db.Column(db.String(128))
-    stream_url = db.Column(db.String(128))
+    img_url = db.Column(db.String(512))
+    stream_url = db.Column(db.String(512))
+    video_source_url = db.Column(db.String(512), nullable=True)
     started_from = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 

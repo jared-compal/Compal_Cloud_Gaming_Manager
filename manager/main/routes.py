@@ -194,7 +194,6 @@ def close_game():
 
 @main.route('/connection-status', methods=['POST'])
 def update_connection_status():
-
     server_ip = request.remote_addr
     client_ip = request.form.get('client_ip', type=str)
     game_id = request.form.get('game_id', type=str)
@@ -244,7 +243,7 @@ def db_sync():
 
 
 @main.route('/createGame', methods=['POST'])
-def add_game():
+def create_game():
     new_game = GameList(
         game_id=request.form.get('game_id', type=str),
         game_title=request.form.get('game_title', type=str),
@@ -316,4 +315,3 @@ def launch_error_handling(check_client_status):
     except Exception as e:
         logging.debug(e)
         logging.debug('Game server no response... not available...')
-
