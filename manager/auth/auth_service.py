@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import current_user, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import current_user, create_access_token, \
+    jwt_required, create_refresh_token, get_current_user
 
 from manager import bcrypt, db
 from manager.models import User
@@ -41,8 +42,8 @@ def protected_content():
 
 @auth_service.route('/refresh', methods=['GET'])
 @jwt_required(refresh=True)
-def refresh_token():
-    identity = get_jwt_identity()
+def refresh():
+    identity = get_current_user()
     access_token = create_access_token(identity=identity)
     return jsonify(access_token=access_token)
 
@@ -51,10 +52,12 @@ def user_authenticate(username, password):
     user = User.query.filter_by(username=username).one_or_none()
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=user)
+        refresh_token = create_refresh_token(identity=user)
         return jsonify({
             "status": True,
             "msg": "Successfully log in user",
-            "access_token": access_token
+            "access_token": access_token,
+            "refresh_token": refresh_token
         })
     else:
         return jsonify({
@@ -63,7 +66,7 @@ def user_authenticate(username, password):
         })
 
 
-def validate_username(self, username, password):
+def validate_username(username, password):
     msg = "That username is taken. Please choose a different one."
     status = False
     if not User.query.filter_by(username=username).first():

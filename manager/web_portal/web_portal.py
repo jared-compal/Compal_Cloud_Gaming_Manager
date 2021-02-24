@@ -1,9 +1,13 @@
 import logging
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, make_response
 from requests import get
-from flask_jwt_extended import jwt_required, get_jwt, create_access_token, \
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,\
     set_access_cookies, unset_jwt_cookies, get_current_user, verify_jwt_in_request
+from jwt.exceptions import ExpiredSignatureError
 
 from manager import bcrypt, db, Config
 from manager.web_portal.forms import RegistrationForm, LoginForm
@@ -77,9 +81,13 @@ def login_page():
                 flash('Login Unsuccessful. Please check username and password', 'danger')
         except Exception as inst:
             logging.debug(inst)
+            flash('Internal server error. Please try again later', 'danger')
+
     resp = make_response(render_template('login.html', title='Login', form=form))
     if unset:
+
         unset_jwt_cookies(resp)
+
     return resp
 
 
@@ -109,15 +117,34 @@ def logout():
     return resp
 
 
+# refresh token
+@portal.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_current_user())
+            set_access_cookies(response, access_token)
+        return response
+    except (RuntimeError, KeyError):
+        return response
+
+
 def is_authenticated():
     unset = False
     try:
         verify_jwt_in_request(optional=True)
         if get_current_user():
             identity = get_current_user()
-            print(identity.username, identity.roles[0].name)
             return identity, unset
-    except Exception as inst:
+    except ExpiredSignatureError as inst:
+        flash('Token expired. Please login again', 'danger')
         print(inst)
         unset = True
+
+    except Exception as inst:
+        logging.debug(inst, type(inst))
+
     return None, unset

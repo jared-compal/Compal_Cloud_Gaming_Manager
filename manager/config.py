@@ -14,7 +14,8 @@ class Config:
     JWT_SECRET_KEY = "os.urandom(16)"
     JWT_TOKEN_LOCATION = ["headers", "cookies"]
     JWT_COOKIE_SECURE = False
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(seconds=30)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(seconds=60)
     # https://cdn.cloudflare.steamstatic.com/steam/apps/410570/header.jpg?t=1570790651
     # https://cdn.cloudflare.steamstatic.com/steam/apps/517710/header.jpg?t=1589270416
 
