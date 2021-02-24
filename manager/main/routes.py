@@ -242,6 +242,7 @@ def db_sync():
     return "DB sync"
 
 
+
 @main.route('/createGame', methods=['POST'])
 def create_game():
     new_game = GameList(
