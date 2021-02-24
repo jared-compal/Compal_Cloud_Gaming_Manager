@@ -15,12 +15,15 @@ nav {
     margin: 0 auto;
     max-width: 1920px;
     font-size: 22px;
-    background-color: #454545;
+    background-color: #0E0E12;
     line-height: 1rem;
 }
 
+.nav__logo {
+    width: 330px;
+}
 .page__title {
-    font-weight: bold;
+    /*font-weight: bold;*/
     padding: 10px 0px 10px 30px;
 }
 
@@ -55,7 +58,6 @@ li:hover {
     max-width: 1920px;
     margin: 0 auto;
     background-color: #11111d;
-    background-image: url('bkg.jpg');
     background-size: contain;
     background-position: center;
     min-height: 1920px;

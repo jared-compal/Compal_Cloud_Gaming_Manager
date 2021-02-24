@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Compal VR Cloud Gaming Backstage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/latest/normalize.css">
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href= "{{ url_for('portal.static', filename='style.css') }}">
+</head>
+<body>
+<nav class="nav__bar">
+    <div class="page__title" onclick="window.location.replace('{{ url_for('portal.portal_page') }}')">Compal VR Cloud Gaming</div>
+    <ul class="menu_btns">
+        {% if current_user.is_authenticated %}
+            <div class="user__label">Hi {{ current_user.username }}</div>
+        {% endif %}
+        <li onclick="window.location.replace('{{ url_for('portal.portal_page') }}')">Home</li>
+        {% if current_user.is_authenticated %}
+            <li onclick="window.location.replace('{{ url_for('backstage.backstage_home') }}')">backstage</li>
+            <li onclick="window.location.replace('{{ url_for('portal.logout') }}')">logout</li>
+        {% else %}
+            <li onclick="window.location.replace('{{ url_for('portal.register_page') }}')">Register</li>
+            <li onclick="window.location.replace('{{ url_for('portal.login_page') }}')">login</li>
+        {% endif %}
+    </ul>
+</nav>
+<div class="wrapper">
+    <section class="streams__section">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {%  block content %}
+        {% endblock %}
+    </section>
+</div>
+<script>
+</script>
+</body>
+</html>

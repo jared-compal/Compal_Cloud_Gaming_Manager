@@ -1,38 +1,44 @@
 {%  extends 'base.html' %}
 
 {%  block content %}
-    <div class="fronter">
-        <a href="{{ url_for('portal.portal_page') }}">
-            <div class="back__btn">Back to list</div>
-        </a>
-    </div>
-    <div class="stream__contents">
-        <div class="games">
-            {% if type=='game' %}
-                <h3> Game Info</h3>
-            {% else %}
-                <h3> Stream Info</h3>
-            {% endif %}
-            <img  class="img__medium" src="{{ data.img_url }}">
-            <div class="content__info">
-                <div class="content__details">
-                    {% if type=='stream' %}
-                        <div class="content__title">{{ data.content_title }}</div>
-                        <div class="content__data">Player - {{ data.player_info }}</div>
-                    {% else %}
-                        <div class="content__title">{{ data.content_title }}</div>
-                        <div class="content__data">Type - {{ data.content_type }}</div>
-                        <div class="content__data">Description - {{ data.content_brief }}</div>
-                    {% endif %}
-                </div>
+    {% if type=='stream' %}
+        <div class="btn btn__div">
+            <button type="button" class="stream__btn" onclick="window.location.href='{{ data.content_url }}'"> 觀看串流 </button>
+        </div>
+    {% endif %}
+            <div class="games">
+                <h3>{{ data.content_title }}</h3>
+                {% if type=='stream' %}
+                    <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" autoplay="play"
+                           controls data-setup='{ "preload":"auto"}' width="800px" height="500px"
+{#                    poster="http://vjs.zencdn.net/v/oceans.png">#}>
+                    <source src="{{ data.content_url }}" type="application/x-mpegURL" />
+                    <p class="vjs-no-js">
+                      To view this video please enable JavaScript, and consider upgrading to a
+                      web browser that
+                      <a href="https://videojs.com/html5-video-support/" target="_blank"
+                        >supports HTML5 video</a>
+                    </p>
+                  </video>
+                {% else %}
+                    <img  class="img__medium" src="{{ data.img_url }}">
+                {% endif %}
             </div>
+    <div class="content__info">
+        <div class="content__details">
             {% if type=='stream' %}
-                <div class="btn btn__div">
-                    <button type="button" class="stream__btn" onclick="window.location.href='{{ data.content_url }}'"> 觀看串流 </button>
-                </div>
+                <h4>串流內容</h4>
+                <div class="content__data content-sub">Player - {{ data.player_info }}</div>
+                <div class="content__data">Description - Plain text, Plain-text, or Plaintext is any text, text file, or document that contains only text. Unlike a rich-text document, a plain text file cannot have bold text, fonts, larger font sizes, or any other special text formatting. The picture is a visual example of plain text vs. formatted text.</div>
+            {% else %}
+                <h4>遊戲內容</h4>
+                <div class="content__data">Type - {{ data.content_type }}</div>
+                <div class="content__data">Description - {{ data.content_brief }}</div>
+                 <div class="content__data">Plain text, Plain-text, or Plaintext is any text, text file, or document that contains only text. Unlike a rich-text document, a plain text file cannot have bold text, fonts, larger font sizes, or any other special text formatting. The picture is a visual example of plain text vs. formatted text.</div>
             {% endif %}
-
         </div>
     </div>
 
 {%  endblock %}
+
+
