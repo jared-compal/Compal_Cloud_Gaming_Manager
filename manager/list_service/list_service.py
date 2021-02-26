@@ -141,7 +141,7 @@ def get_content(content_type, content_id):
             data[content_type]["img_url"] = SERVER_ADDR + item.img_url
             data[content_type]["content_url"] = item.video_source_url
             data[content_type]["player_info"] = item.client_username
-            data[content_type]["player_id"] = item.client_ip
+            data[content_type]["player_id"] = item.client_username
         else:
             data["status"] = False
             data["msg"] = "Couldn't find the specific stream"

@@ -35,7 +35,7 @@
                 </div>
 
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">近期遊玩</h1>
+        <h1 class="h2">Recently</h1>
     </div>
     <div class="card-container container-md">
     {% if games is not none %}
@@ -52,13 +52,14 @@
     {% endif %}
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-         <h1 class="h2">直播串流</h1>
+         <h1 class="h2">Live</h1>
     </div>
     <div class="card-container container-md">
     {% if streams is not none %}
     {% for key, stream in streams.items() %}
         <div class="card" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
-            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted"}' >
+            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted" }' >
+{#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{ "poster":"{{ stream.img_url }}"}' >#}
                 <source src="{{ stream.content_url }}" type="application/x-mpegURL" />
             </video>
 
@@ -72,7 +73,7 @@
     {% endif %}
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">新上市</h1>
+        <h1 class="h2">New Games</h1>
     </div>
     <div class="card-container container-md">
     {% if games is not none %}
