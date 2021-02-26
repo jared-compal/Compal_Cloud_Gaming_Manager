@@ -77,8 +77,8 @@
     <div class="card-container container-md">
     {% if games is not none %}
     {% for key, game in games.items() %}
-        <div class="card">
-          <img src="{{ url_for("portal.static", filename="/pics/EX_Pic-1_42x.png") }}" class="card-img" alt="...">
+        <div class="card" onclick="javascript:location.href='{{ url_for("portal.portal_games", game_id=game.content_id) }}'">
+          <img src="{{ game.img_url }}" class="card-img" alt="...">
           <div class="card-body">
               <div class="card-game-title">{{ game.content_title }}</div>
               <div class="card-game-description">{{ game.content_type }}</div>

@@ -34,20 +34,12 @@
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
-            <li class="nav-item active">
-              <a class="nav-link" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
-              <ul class="dropdown-menu" aria-labelledby="dropdown01">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
+{#            <li class="nav-item active">#}
+{#              <a class="nav-link" aria-current="page" href="#"></a>#}
+{#            </li>#}
+{#            <li class="nav-item">#}
+{#              <a class="nav-link" href="#"></a>#}
+{#            </li>#}
           </ul>
           <form class="d-flex">
             <input class="form-control me-2" id="input-search" type="search" placeholder="搜尋遊戲" aria-label="Search">
@@ -122,23 +114,23 @@
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/新上架.png') }}">
                         <a class="nav-link active" aria-current="page" href="#">
                           <span data-feather="home"></span>
-                          新上架
+                        遊戲
                         </a>
                     </li>
-                    <li class="nav-item  game-category">
-                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/動作.png') }}">
-                        <a class="nav-link active" aria-current="page" href="#">
-                          <span data-feather="home"></span>
-                          動作
-                        </a>
-                    </li>
-                    <li class="nav-item  game-category">
-                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/恐怖.png') }}">
-                        <a class="nav-link active" aria-current="page" href="#">
-                          <span data-feather="home"></span>
-                          恐怖
-                        </a>
-                    </li>
+{#                    <li class="nav-item  game-category">#}
+{#                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/動作.png') }}">#}
+{#                        <a class="nav-link active" aria-current="page" href="#">#}
+{#                          <span data-feather="home"></span>#}
+{#                          動作#}
+{#                        </a>#}
+{#                    </li>#}
+{#                    <li class="nav-item  game-category">#}
+{#                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/恐怖.png') }}">#}
+{#                        <a class="nav-link active" aria-current="page" href="#">#}
+{#                          <span data-feather="home"></span>#}
+{#                          恐怖#}
+{#                        </a>#}
+{#                    </li>#}
                     <li class="nav-item game-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/影片.png') }}">
                         <a class="nav-link active" aria-current="page" href="#">
@@ -150,7 +142,7 @@
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/商業.png') }}">
                         <a class="nav-link active" aria-current="page" href="#">
                           <span data-feather="home"></span>
-                          商業
+                          應用
                         </a>
                     </li>
 
