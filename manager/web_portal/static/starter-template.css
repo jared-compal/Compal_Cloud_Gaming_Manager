@@ -194,9 +194,10 @@ hr{
   padding-bottom: 5px;
 }
 .card-container {
-    display: flex;
+  display: flex;
     padding: 0px 0px 0px 20px;
-    flex-flow: wrap;
+    overflow: hidden;
+    max-width: 980px;
 }
 .card {
     background-color: transparent;
@@ -204,6 +205,7 @@ hr{
     border-radius: 0px;
     padding: 10px 10px;
     width: 240px;
+    min-width: 240px;
 }
 .card-game-title {
   color: white;
@@ -233,7 +235,7 @@ h3 {
   margin: 30px auto;
 }
 .img__medium {
-  min-height: 480px;
+  min-height: 360px;
   margin: 20px 0px 40px 0px;
   max-width: 100%;
 }
