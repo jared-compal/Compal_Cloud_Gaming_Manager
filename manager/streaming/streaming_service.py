@@ -57,7 +57,7 @@ def delete_stream(stream_id):
 @streaming_service.route('/start')  # API for front-end client
 def start_streaming():
     # client_ip = request.remote_addr
-    client_ip = request.args.get('client')
+    client_ip = request.args.get('client_ip')
     connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
 
     if connection.connection_status == 'playing':

@@ -196,6 +196,13 @@ def update_connection_status():
         logging.info('status update - ' + connection_status)
         update_status(query, connection_status)
 
+    # Temporary method to open stream
+    if connection_status == "playing":
+        try:
+            start_streaming_res = get('http://{0}:5000/streaming_service/start?client_ip={1}'.format(SERVER_ADDR, client_ip))
+        except Exception as inst:
+            logging.debug(inst)
+
     return 'Successfully update status'
 
 
