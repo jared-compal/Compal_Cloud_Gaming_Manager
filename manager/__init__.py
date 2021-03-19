@@ -27,7 +27,7 @@ def create_app():
     from manager.list_service.list_service import list_service
     from manager.web_portal.web_portal import portal
     from manager.auth.auth_service import auth_service
-    from manager.models import User
+    # from manager.models import User
     from manager.streaming.streaming_service import streaming_service
     app.register_blueprint(main)
     app.register_blueprint(list_service)

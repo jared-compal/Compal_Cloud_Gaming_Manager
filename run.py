@@ -1,4 +1,3 @@
-import sys
 from manager import create_app
 
 app = create_app()

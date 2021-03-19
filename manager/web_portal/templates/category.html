@@ -1,0 +1,53 @@
+{%  extends 'base.html' %}
+
+{%  block content %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{ title }}</h1>
+    </div>
+    <div class="card-container container-md" style="overflow: auto; flex-wrap: wrap;">
+
+    {% if games is defined %}
+    {% for key, game in games.items() %}
+
+        <div class="card card-category" onclick="javascript:location.href='{{ url_for("portal.portal_games", game_id=game.content_id) }}'">
+          <img src="{{ game.img_url }}" class="card-img" alt="...">
+          <div class="card-body">
+              <div class="card-game-title">{{ game.content_title }}</div>
+              <div class="card-game-description">{{ game.content_type }}</div>
+          </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if apps is defined %}
+    {% for key, app in apps.items() %}
+        <div class="card card-category" onclick="javascript:location.href='{{ url_for("portal.portal_apps", app_id=app.content_id) }}'">
+          <img src="{{ app.img_url }}" class="card-img" alt="...">
+          <div class="card-body">
+              <div class="card-game-title">{{ app.content_title }}</div>
+              <div class="card-game-description">{{ app.content_type }}</div>
+          </div>
+        </div>
+
+    {% endfor %}
+    {% endif %}
+
+    {% if streams is defined %}
+    {% for key, stream in streams.items() %}
+        <div class="card card-category" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
+{#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted" }' >#}
+{#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{ "poster":"{{ stream.img_url }}"}' >#}
+{#                <source src="{{ stream.content_url }}" type="application/x-mpegURL" />#}
+{#            </video>#}
+             <iframe  height="120px" src="{{ stream.content_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="card-body">
+                <div class="card-game-title">{{ stream.content_title }}</div>
+                <div class="card-game-description">{{ stream.player_info }}</div>
+            </div>
+        </div>
+
+    {% endfor %}
+    {% endif %}
+    </div>
+
+{%  endblock %}

@@ -22,8 +22,59 @@ def portal_page():
     identity, unset = is_authenticated()
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()
+    app_info = get('{0}/apps'.format(SERVER_ADDR)).json()
     resp = make_response(render_template(
-        'index.html', games=game_info.get('games'), streams=stream_info.get('streams'), identity=identity
+        'index.html', games=game_info.get('games'), streams=stream_info.get('streams'),
+        apps=app_info.get('apps'), identity=identity
+    ))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
+
+
+@portal.route('/games')
+def game_page():
+    identity, unset = is_authenticated()
+    game_info = get('{0}/games'.format(SERVER_ADDR)).json()
+    resp = make_response(render_template(
+        'category.html', games=game_info.get('games'), title='Game', identity=identity
+    ))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
+
+
+@portal.route('/streams')
+def stream_page():
+    identity, unset = is_authenticated()
+    stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
+    resp = make_response(render_template(
+        'category.html', streams=stream_info.get('streams'), title='Stream', identity=identity
+    ))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
+
+
+@portal.route('/apps')
+def app_page():
+    identity, unset = is_authenticated()
+    app_info = get('{0}/apps'.format(SERVER_ADDR)).json()
+    resp = make_response(render_template(
+        'category.html', apps=app_info.get('apps'), title='Application', identity=identity
+    ))
+    if unset:
+        unset_jwt_cookies(resp)
+    return resp
+
+
+@portal.route('/popular')
+def popular_page():
+    identity, unset = is_authenticated()
+    game_info = get('{0}/games'.format(SERVER_ADDR)).json()
+    app_info = get('{0}/apps'.format(SERVER_ADDR)).json()
+    resp = make_response(render_template(
+        'category.html', games=game_info.get('games'), apps=app_info.get('apps'), title='Popular', identity=identity
     ))
     if unset:
         unset_jwt_cookies(resp)
@@ -51,6 +102,20 @@ def portal_games(game_id):
     if game_info['status']:
         resp = make_response(render_template(
             'content_page.html', data=game_info.get('game'), type='game', identity=identity
+        ))
+        if unset:
+            unset_jwt_cookies(resp)
+        return resp
+    return redirect(url_for('portal.portal_page'), code=302)
+
+
+@portal.route('/apps/<app_id>')
+def portal_apps(app_id):
+    identity, unset = is_authenticated()
+    app_info = get('{0}/apps/{1}'.format(SERVER_ADDR, app_id)).json()
+    if app_info['status']:
+        resp = make_response(render_template(
+            'content_page.html', data=app_info.get('app'), type='app', identity=identity
         ))
         if unset:
             unset_jwt_cookies(resp)
@@ -119,7 +184,7 @@ def logout():
 
 # refresh token
 @portal.after_request
-def refresh_expiring_jwts(response):
+def refresh_expiring_jwt(response):
     try:
         exp_timestamp = get_jwt()["exp"]
         now = datetime.now(timezone.utc)

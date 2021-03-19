@@ -194,15 +194,16 @@ hr{
   padding-bottom: 5px;
 }
 .card-container {
-  display: flex;
-  padding: 0px;
+    display: flex;
+    padding: 0px 0px 0px 20px;
+    flex-flow: wrap;
 }
 .card {
-  background-color: transparent;
-  border: 0px;
-  border-radius: 0px;
-  padding: 5px 10px;
-  width: 260px;
+    background-color: transparent;
+    border: 0px;
+    border-radius: 0px;
+    padding: 10px 10px;
+    width: 240px;
 }
 .card-game-title {
   color: white;
@@ -216,11 +217,11 @@ hr{
   background-color: #2A2D3A;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
-  padding: 0.8rem 1rem;
+  padding: 0.5rem 1rem;
 }
 .card-img {
   border-radius: 20px 20px 0 0;
-  height: 130px;
+  height: 120px;
 }
 .card:hover {
   cursor: pointer;
@@ -229,7 +230,7 @@ h3 {
   color: #FFFFFF;
   font-weight: bold;
   font-size: 40px;
-  margin: 30px 0px;
+  margin: 30px auto;
 }
 .img__medium {
   min-height: 480px;
@@ -334,7 +335,7 @@ label {
     border-radius: 25px;
 }
 #dropdown-menu-2 {
-    left: -50%;
+    left: -120%;
     top: 130%;
     text-align: center;
     min-width: 8rem;
@@ -350,4 +351,28 @@ label {
 .games h3 {
   max-width: 800px;
   text-align: center;
+}
+#dropdown02 {
+    width: 43px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: lightgrey;
+    padding: 5px;
+    border: solid 0.8px darkgrey;
+}
+#dropdown02:hover, active {
+  background-color: darkgrey;
+}
+iframe {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.content-iframe {
+    width: 800px;
+    height: 500px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.card-category {
+  margin: 12px 0px;
 }
