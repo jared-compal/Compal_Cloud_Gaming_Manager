@@ -137,7 +137,7 @@ def get_contents(content_type):
 
     if content_type == 'games':
         query = GameList.query.all()
-        playing_game_id = check_user_playing('game')
+        playing_game_id = check_user_playing()
         if query:
             data['total_num'] = len(query)
             for index, item in enumerate(query):
@@ -158,7 +158,7 @@ def get_contents(content_type):
 
     if content_type == 'apps':
         query = AppList.query.all()
-        playing_game_id = check_user_playing('app')
+        playing_game_id = check_user_playing()
         if query:
             data['total_num'] = len(query)
             for index, item in enumerate(query):
@@ -202,7 +202,7 @@ def get_content(content_type, content_id):
 
     if content_type == 'game':
         item = GameList.query.filter_by(game_id=content_id).first()
-        playing_game_id = check_user_playing('game')
+        playing_game_id = check_user_playing()
         launched = False
         if playing_game_id == content_id:
             launched = True
@@ -219,7 +219,7 @@ def get_content(content_type, content_id):
 
     if content_type == 'app':
         item = AppList.query.filter_by(app_id=content_id).first()
-        playing_game_id = check_user_playing('app')
+        playing_game_id = check_user_playing()
         launched = False
         if playing_game_id == content_id:
             launched = True
@@ -237,8 +237,7 @@ def get_content(content_type, content_id):
     return data
 
 
-def check_user_playing(app_type):
+def check_user_playing():
     playing_info = ClientConnectionList.query.filter_by(client_ip=request.remote_addr,
-                                                        connection_status='playing',
-                                                        app_type=app_type).first()
+                                                        connection_status='playing').first()
     return '' if playing_info is None else playing_info.app_id

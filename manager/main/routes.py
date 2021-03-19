@@ -186,7 +186,7 @@ def update_connection_status():
             client_ip=client_ip,
             # user_id=['client_username'],
             app_id=app_id,
-            app_type=app_type,
+            platform=platform,
             connection_status=connection_status
         )
         db.session.add(new_connection)
