@@ -347,3 +347,7 @@ label {
 .stream-video {
   justify-content: space-around;
 }
+.games h3 {
+  max-width: 800px;
+  text-align: center;
+}

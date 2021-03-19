@@ -4,7 +4,7 @@ from flask import request, Blueprint
 from requests import get
 
 from manager import db
-from manager.models import StreamList, ClientConnectionList, datetime
+from manager.models import StreamList, ClientConnectionList, datetime, GameList
 
 streaming_service = Blueprint('streaming_service', __name__)
 
@@ -12,12 +12,16 @@ streaming_service = Blueprint('streaming_service', __name__)
 @streaming_service.route('/', methods=['POST'])  # API for game server to update
 def add_stream():
     try:
+        client_ip = request.form.get('client_ip', type=str)
+        connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
+        game_id = connection.game_id
+        game = GameList.query.filter_by(game_id=game_id).first()
         video_source_url = 'http://' + request.remote_addr + request.form.get('video_source_url', type=str)
         stream_info = {
             'server_ip': request.form.get('game_server_ip', type=str),
             # 'stream_title': request.form.get('stream_title', type=str),
-            'stream_title': 'Test',
-            'client_ip': request.form.get('client_ip', type=str),
+            'stream_title': game.game_title,
+            'client_ip': client_ip,
             'stream_url': video_source_url,
             'video_source_url': video_source_url,
             # 'client_username': request.form.get('player_username', type=str)
