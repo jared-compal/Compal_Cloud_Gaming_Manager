@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, jsonify, request
 
 from manager import Config
-from manager.models import StreamList, GameList, ClientConnectionList
+from manager.models import StreamList, GameList, ClientConnectionList, AppList
 
 SERVER_ADDR = 'http://{0}:5000'.format(Config.IP)
 list_service = Blueprint('list_service', __name__)
@@ -72,6 +72,38 @@ def show_game(game_id):
     return resp
 
 
+@list_service.route('/apps')
+def show_apps():
+    try:
+        data = get_contents('apps')
+        resp = jsonify(data)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+    except Exception as e:
+        logging.debug(e)
+        resp = {
+            'success': False,
+            'msg': 'DB error'
+        }
+
+    return resp
+
+
+@list_service.route('/apps/<string:app_id>')
+def show_app(app_id):
+    try:
+        data = get_content('app', app_id)
+        resp = jsonify(data)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+    except Exception as e:
+        logging.debug(e)
+        resp = {
+            'success': False,
+            'msg': 'DB error'
+        }
+
+    return resp
+
+
 @list_service.route('/favorites')
 def favorite_list():
     return 'under construction'
@@ -105,7 +137,7 @@ def get_contents(content_type):
 
     if content_type == 'games':
         query = GameList.query.all()
-        playing_game_id = check_user_playing()
+        playing_game_id = check_user_playing('game')
         if query:
             data['total_num'] = len(query)
             for index, item in enumerate(query):
@@ -116,13 +148,35 @@ def get_contents(content_type):
                     "already_launched": launched,
                     "content_id": item.game_id,
                     "content_title": item.game_title,
-                    "content_type": item.game_type,
+                    "content_type": item.game_genre,
                     "content_brief": item.game_brief,
                     "img_url": SERVER_ADDR + item.img_url
                 }
                 data['msg'] = 'Game list...'
             else:
                 data['msg'] = 'Currently no available game'
+
+    if content_type == 'apps':
+        query = AppList.query.all()
+        playing_game_id = check_user_playing('app')
+        if query:
+            data['total_num'] = len(query)
+            for index, item in enumerate(query):
+                launched = False
+                if playing_game_id == item.app_id:
+                    launched = True
+                data[content_type][index] = {
+                    "already_launched": launched,
+                    "content_id": item.app_id,
+                    "content_title": item.app_title,
+                    "content_type": item.app_genre,
+                    "content_brief": item.app_brief,
+                    "img_url": SERVER_ADDR + item.img_url
+                }
+                data['msg'] = 'App list...'
+            else:
+                data['msg'] = 'Currently no available app'
+
     return data
 
 
@@ -148,7 +202,7 @@ def get_content(content_type, content_id):
 
     if content_type == 'game':
         item = GameList.query.filter_by(game_id=content_id).first()
-        playing_game_id = check_user_playing()
+        playing_game_id = check_user_playing('game')
         launched = False
         if playing_game_id == content_id:
             launched = True
@@ -156,17 +210,35 @@ def get_content(content_type, content_id):
             data[content_type]["already_launched"] = launched
             data[content_type]["content_id"] = item.game_id
             data[content_type]["content_title"] = item.game_title
-            data[content_type]["content_type"] = item.game_type
+            data[content_type]["content_type"] = item.game_genre
             data[content_type]["content_brief"] = item.game_brief
             data[content_type]["img_url"] = SERVER_ADDR + item.img_url
         else:
             data["status"] = False
-            data["msg"] = "Couldn't find the specific stream"
+            data["msg"] = "Couldn't find the specific game"
+
+    if content_type == 'app':
+        item = AppList.query.filter_by(app_id=content_id).first()
+        playing_game_id = check_user_playing('app')
+        launched = False
+        if playing_game_id == content_id:
+            launched = True
+        if item:
+            data[content_type]["already_launched"] = launched
+            data[content_type]["content_id"] = item.app_id
+            data[content_type]["content_title"] = item.app_title
+            data[content_type]["content_type"] = item.app_genre
+            data[content_type]["content_brief"] = item.app_brief
+            data[content_type]["img_url"] = SERVER_ADDR + item.img_url
+        else:
+            data["status"] = False
+            data["msg"] = "Couldn't find the specific app"
 
     return data
 
 
-def check_user_playing():
+def check_user_playing(app_type):
     playing_info = ClientConnectionList.query.filter_by(client_ip=request.remote_addr,
-                                                        connection_status='playing').first()
-    return '' if playing_info is None else playing_info.game_id
+                                                        connection_status='playing',
+                                                        app_type=app_type).first()
+    return '' if playing_info is None else playing_info.app_id

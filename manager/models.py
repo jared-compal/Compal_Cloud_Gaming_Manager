@@ -21,9 +21,15 @@ def my_expired_token_callback(jwt_header, jwt_payload):
 
 
 favorite_game_list = \
-    db.Table('myFavorite',
+    db.Table('myFavoriteGame',
              db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
              db.Column('game_id', db.String(32), db.ForeignKey('game_list.game_id'))
+             )
+
+favorite_app_list = \
+    db.Table('myFavoriteApp',
+             db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+             db.Column('app_id', db.String(32), db.ForeignKey('app_list.app_id'))
              )
 
 
@@ -48,6 +54,12 @@ class AvailableGamesForServers(db.Model):
     server_ip = db.Column(db.String(80), db.ForeignKey('game_servers.server_ip'), nullable=False)
 
 
+class AvailableAppsForServers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    app_id = db.Column(db.String(32), nullable=False)
+    server_ip = db.Column(db.String(80), db.ForeignKey('game_servers.server_ip'), nullable=False)
+
+
 class StreamList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     server_ip = db.Column(db.String(32), unique=True, nullable=False)
@@ -65,10 +77,30 @@ class GameList(db.Model):
     id = db.Column(db.Integer, unique=True, autoincrement=True)
     game_id = db.Column(db.String(32), primary_key=True, nullable=False)
     game_title = db.Column(db.String(32), nullable=False)
-    game_type = db.Column(db.String(32))
+    game_genre = db.Column(db.String(32))
+    platform = db.Column(db.String(32))
     game_brief = db.Column(db.String(256))
     img_url = db.Column(db.String(256))
+    developer = db.Column(db.String(128), nullable=False)
+    publication_status = db.Column(db.String(16), default='Private', nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    update_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     users = db.relationship('User', secondary=favorite_game_list, backref='games')
+
+
+class AppList(db.Model):
+    id = db.Column(db.Integer, unique=True, autoincrement=True)
+    app_id = db.Column(db.String(32), primary_key=True, nullable=False)
+    app_title = db.Column(db.String(32), nullable=False)
+    app_genre = db.Column(db.String(32))
+    app_brief = db.Column(db.String(256))
+    platform = db.Column(db.String(32))
+    img_url = db.Column(db.String(256))
+    developer = db.Column(db.String(128), nullable=False)
+    publication_status = db.Column(db.String(16), default='Private', nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    update_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    users = db.relationship('User', secondary=favorite_app_list, backref='apps')
 
 
 class ClientConnectionList(db.Model):
@@ -76,13 +108,12 @@ class ClientConnectionList(db.Model):
     user_id = db.Column(db.String(32), unique=False, nullable=True)
     client_ip = db.Column(db.String(32), unique=False, nullable=False)
     server_ip = db.Column(db.String(32), unique=False, nullable=False)
-    game_id = db.Column(db.String(32), unique=False, nullable=False)
+    app_id = db.Column(db.String(32), unique=False, nullable=False)
+    platform = db.Column(db.String(15), unique=False, nullable=False)
     connection_status = db.Column(db.String(32), nullable=False)
-    launch_time = db.Column(db.DateTime, nullable=False,
-                            default=datetime.utcnow)
+    launch_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     close_time = db.Column(db.DateTime, nullable=True)
-    total_play_time = db.Column(db.BigInteger, nullable=True,
-                                default=0)
+    total_play_time = db.Column(db.BigInteger, nullable=True, default=0)
 
 
 class User(db.Model):

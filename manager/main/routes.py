@@ -4,10 +4,10 @@ from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post, get
 from flask_jwt_extended import jwt_required
 
-from manager.models import AvailableGamesForServers, GameServers, \
-    GameList, datetime, ClientConnectionList, User, Role
+from manager.models import GameServers, \
+    GameList, datetime, ClientConnectionList, User, Role, \
+    AvailableAppsForServers, AppList
 from manager import db, Config
-
 
 SERVER_ADDR = Config.SERVER_ADDR
 FORMAT = "%(asctime)s -%(levelname)s : %(message)s"
@@ -23,23 +23,23 @@ def index():
 # Register game server
 @main.route('/register', methods=['POST'])
 def register_game_server():
-    games = request.form.getlist('games')
+    apps = request.form.getlist('apps')
     logging.info('Register game list: ')
-    logging.info(games)
-    if games:
+    logging.info(apps)
+    if apps:
         g_server_ip = request.remote_addr
         register_server(g_server_ip)
         logging.info('register game server')
-        add_server_games(games, g_server_ip)
-        logging.info('add game list')
+        add_server_games(apps, g_server_ip)
+        logging.info('add app list')
         return {
             'status': True,
-            'msg': '{0} game server registered'.format(g_server_ip)
+            'msg': '{0} edge server registered'.format(g_server_ip)
         }
     else:
         return {
             'status': False,
-            'msg': 'Please list available games'
+            'msg': 'Please list available apps'
         }
 
 
@@ -52,14 +52,18 @@ def unregister_game_server():
     if query is not None:
         query.is_available = False
         query.client_ip = None
-        delete_games = AvailableGamesForServers.__table__.delete().where(
-            AvailableGamesForServers.server_ip == g_server_ip)  # delete the game options in AvailableGamesForServers
-        db.session.execute(delete_games)
+        # delete_games = AvailableGamesForServers.__table__.delete().where(
+        #     AvailableGamesForServers.server_ip == g_server_ip)  # delete the game options in AvailableGamesForServers
+        delete_apps = AvailableAppsForServers.__table__.delete().where(
+            AvailableAppsForServers.server_ip == g_server_ip)  # delete the app options in AvailableGamesForServers
+
+        # db.session.execute(delete_games)
+        db.session.execute(delete_apps)
         db.session.commit()
     else:
         return {
             'status': False,
-            'msg': "Game server hasn't registered before"
+            'msg': "Edge server hasn't registered before"
         }
 
     return {
@@ -77,63 +81,31 @@ def playing_game(game_id):
     }
     player_ip = request.remote_addr
     logging.info(f'Player {player_ip} requests launching game: ')
-    check_client_status = GameServers.query.filter_by(client_ip=player_ip).first()
-    check_connection_status = ClientConnectionList.query\
-        .filter_by(client_ip=player_ip, connection_status='playing').first()
-
-    if check_client_status and check_connection_status:
-        response['msg'] = 'Please close previous game first'
+    query = GameList.query.filter_by(game_id=game_id).first()
+    if query:
+        response = launch_app(response, player_ip, game_id, query.game_title, query.platform)
     else:
-        # error handling - has allocated game server to client but game server didn't launched game
-        if check_client_status and check_connection_status is None:
-            launch_error_handling(check_client_status)
+        response['msg'] = 'Selected game is not available'
+    resp = jsonify(response)
+    logging.info(response)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
-        # choose game server that has the game installed and is also available
-        servers = GameServers.query\
-            .join(AvailableGamesForServers,
-                  AvailableGamesForServers.server_ip == GameServers.server_ip) \
-            .filter(AvailableGamesForServers.game_id == game_id) \
-            .filter(GameServers.is_available == True).all()
-        if not servers:  # if cannot query any game server
-            response['msg'] = 'Currently no available game server'
-        else:
-            response['status'] = False
-            response['msg'] = 'Selected game is not available'
-            game = GameList.query.filter_by(game_id=game_id).first()
-            if game is not None:
-                response['msg'] = 'Not able to allocate game server at this moment. ' \
-                                  'Please play this game later.'
-                for game_server in servers:  # loop through game server list and break once game server is available
-                    game_server_ip = game_server.server_ip
-                    logging.info('allocate game server: ')
-                    logging.info(game_server_ip)
-                    req_data = {
-                        # "user_id": user_id,
-                        "player_ip": player_ip,
-                        "game_title": game.game_title,
-                        "game_id": game_id
-                    }
-                    try:
-                        server_res = post('http://{0}:8080/game-connection'
-                                          .format(game_server_ip), data=req_data, timeout=8)
-                        game_server_res = server_res.json()
-                    except Exception as inst:
-                        logging.debug('Game server error')
-                        logging.debug(inst)
-                        game_server.is_available = False
-                        db.session.commit()
-                    else:
-                        if game_server_res['launch success']:
-                            game_server.is_available = False
-                            game_server.client_ip = player_ip
-                            db.session.commit()
 
-                            response['status'] = True
-                            response['msg'] = 'Succesfully allocate game server... ' \
-                                              'connecting then launching game title...'
-                            response['game_server_ip'] = game_server_ip
-                            break
-
+@main.route('/apps/<string:app_id>/launch', methods=['GET'])
+def playing_app(app_id):
+    logging.info('launch app')
+    response = {
+        'msg': '',
+        'status': False
+    }
+    player_ip = request.remote_addr
+    logging.info(f'Player {player_ip} requests launching app: ')
+    query = AppList.query.filter_by(app_id=app_id).first()
+    if query:
+        response = launch_app(response, player_ip, app_id, query.app_title, query.platform)
+    else:
+        response['msg'] = 'Selected app is not available'
     resp = jsonify(response)
     logging.info(response)
     resp.headers['Access-Control-Allow-Origin'] = '*'
@@ -145,7 +117,7 @@ def resume_game():
     data = {
         'status': True,
         'game_server_ip': '',
-        'msg': 'Successfully resume the game'
+        'msg': 'Successfully resume the app'
     }
     client_ip = request.remote_addr
     game_connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
@@ -153,7 +125,7 @@ def resume_game():
         data['game_server_ip'] = game_connection.server_ip
     else:
         data['status'] = False
-        data['msg'] = 'The game has already been closed... it could be due to idling for too long. '
+        data['msg'] = 'The app has already been closed... it could be due to idling for too long. '
     return data
 
 
@@ -162,7 +134,7 @@ def close_game():
     logging.info('closed request')
     data = {
         'status': True,
-        'msg': 'Successfully close the game'
+        'msg': 'Successfully close the app'
     }
     client_ip = request.remote_addr
     game_server = GameServers.query.filter_by(client_ip=client_ip, is_available=False).first()
@@ -170,25 +142,23 @@ def close_game():
         req_data = {
             'client_ip': client_ip
         }
-        print(game_server)
         try:
             print('http://{0}:8080/game-disconnection'.format(game_server.server_ip))
             game_server_res = post('http://{0}:8080/game-disconnection'.format(game_server.server_ip), data=req_data)
-            print(game_server_res)
         except Exception as e:
-            logging.info("Error when closing game")
+            logging.info("Error when closing app")
             logging.debug(e)
             query = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
             update_status(query, 'closed')
         else:
             if game_server_res.status_code != 200:
                 data['status'] = False
-                data['msg'] = 'Game server error, reset game server now'
+                data['msg'] = 'Edge server error, reset edge server now'
         return data
 
     else:
         data['status'] = True
-        data['msg'] = 'Game has been closed'
+        data['msg'] = 'App has been closed'
         return data
 
 
@@ -196,11 +166,14 @@ def close_game():
 def update_connection_status():
     server_ip = request.remote_addr
     client_ip = request.form.get('client_ip', type=str)
-    game_id = request.form.get('game_id', type=str)
+    app_id = request.form.get('app_id', type=str)
     connection_status = request.form.get('connection_status', type=str)
-    query = ClientConnectionList.query.filter_by(client_ip=client_ip, server_ip=server_ip, game_id=game_id).first()
+    platform = request.form.get('platform', type=str)
+    query = ClientConnectionList.query.filter_by(client_ip=client_ip, server_ip=server_ip,
+                                                 app_id=app_id, platform=platform).first()
     logging.info('Update connection status: ')
-    logging.info(f'client ip: {client_ip}, server ip: {server_ip}, game id: {game_id}, status: {connection_status}')
+    logging.info(f'client ip: {client_ip}, server ip: {server_ip},'
+                 f'app id: {app_id}, platform: {platform}, status: {connection_status}')
 
     if connection_status == 'timeout':
         register_server(server_ip)
@@ -212,7 +185,8 @@ def update_connection_status():
             server_ip=server_ip,
             client_ip=client_ip,
             # user_id=['client_username'],
-            game_id=game_id,
+            app_id=app_id,
+            app_type=app_type,
             connection_status=connection_status
         )
         db.session.add(new_connection)
@@ -242,13 +216,12 @@ def db_sync():
     return "DB sync"
 
 
-
 @main.route('/createGame', methods=['POST'])
 def create_game():
     new_game = GameList(
         game_id=request.form.get('game_id', type=str),
         game_title=request.form.get('game_title', type=str),
-        game_type=request.form.get('game_type', type=str),
+        game_genre=request.form.get('game_genre', type=str),
         game_brief=request.form.get('game_brief', type=str),
         img_url="{0}/static/games_icon/redout.jpg".format(SERVER_ADDR)
     )
@@ -275,13 +248,13 @@ def register_server(g_server_ip):
         db.session.commit()
 
 
-def add_server_games(games, server_ip):
+def add_server_games(apps, server_ip):
     """ add game options into AvailableGamesForServers """
-    game_list = []
-    for game_id in games:
-        game_list.append(AvailableGamesForServers(game_id=game_id, server_ip=server_ip))
+    app_list = []
+    for app in apps:
+        app_list.append(AvailableAppsForServers(app_id=app, server_ip=server_ip))
 
-    db.session.add_all(game_list)
+    db.session.add_all(app_list)
     db.session.commit()
 
 
@@ -316,3 +289,58 @@ def launch_error_handling(check_client_status):
     except Exception as e:
         logging.debug(e)
         logging.debug('Game server no response... not available...')
+
+
+def launch_app(response, player_ip, app_id, app_title, platform):
+    check_client_status = GameServers.query.filter_by(client_ip=player_ip).first()
+    check_connection_status = ClientConnectionList.query \
+        .filter_by(client_ip=player_ip, connection_status='playing').first()
+
+    if check_client_status and check_connection_status:
+        response['msg'] = 'Please close previous app first'
+    else:
+        # error handling - has allocated game server to client but game server didn't launched game
+        if check_client_status and check_connection_status is None:
+            launch_error_handling(check_client_status)
+
+        # choose game server that has the app installed and is also available
+        servers = GameServers.query \
+            .join(AvailableAppsForServers,
+                  AvailableAppsForServers.server_ip == GameServers.server_ip) \
+            .filter(AvailableAppsForServers.app_id == app_id) \
+            .filter(GameServers.is_available == True).all()
+        response['msg'] = 'Not able to allocate edge server at this moment. ' \
+                          'Please launch this app later.'
+        if servers is not None:  # if there are available edge servers
+            for game_server in servers:  # loop through game server list and break once game server is available
+                game_server_ip = game_server.server_ip
+                logging.info('allocate edge server: ')
+                logging.info(game_server_ip)
+                req_data = {
+                    # "user_id": user_id,
+                    "player_ip": player_ip,
+                    "app_title": app_title,
+                    "app_id": app_id,
+                    "platform": platform
+                }
+                try:
+                    server_res = post('http://{0}:8080/game-connection'
+                                      .format(game_server_ip), data=req_data, timeout=8)
+                    game_server_res = server_res.json()
+                    if game_server_res['launch success']:
+                        game_server.is_available = False
+                        game_server.client_ip = player_ip
+                        db.session.commit()
+
+                        response['status'] = True
+                        response['msg'] = 'Succesfully allocate edge server... ' \
+                                          'connecting then launching the app...'
+                        response['game_server_ip'] = game_server_ip
+                        break
+
+                except Exception as inst:
+                    logging.debug('Edge server error')
+                    logging.debug(inst)
+                    game_server.is_available = False
+                    db.session.commit()
+    return response

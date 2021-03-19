@@ -34,12 +34,6 @@
 
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
-{#            <li class="nav-item active">#}
-{#              <a class="nav-link" aria-current="page" href="#"></a>#}
-{#            </li>#}
-{#            <li class="nav-item">#}
-{#              <a class="nav-link" href="#"></a>#}
-{#            </li>#}
           </ul>
           <form class="d-flex">
             <input class="form-control me-2" id="input-search" type="search" placeholder="Search game" aria-label="Search">
@@ -49,7 +43,7 @@
               <ul class="navbar-nav me-auto mb-2 mb-md-0">
                   {% if identity %}
                 <li class="nav-item active dropdown">
-                    <img class="nav-link user-icon dropdown-toggle" id="dropdown02" data-bs-toggle="dropdown"
+                    <img class="nav-link us-er-icon dropdown-toggle" id="dropdown02" data-bs-toggle="dropdown"
                          aria-expanded="false" src="{{ url_for('static', filename='/user_icon_default.png') }}" >
                      <ul class="dropdown-menu" id="dropdown-menu-2" aria-labelledby="dropdown02">
                         <li><div class="dropdown-item">Hi {{ identity.username }}</div></li>
@@ -79,14 +73,14 @@
                 <ul class="nav flex-column">
                     <li class="nav-item  nav-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/熱門推薦.png') }}">
-                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.portal_page') }}">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.popular_page') }}">
                           <span data-feather="home"></span>
                           Popular
                         </a>
                     </li>
                     <li class="nav-item  nav-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/直播串流.png') }}">
-                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.portal_page') }}">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.stream_page') }}">
                           <span data-feather="home"></span>
                           Live
                         </a>
@@ -112,25 +106,11 @@
                 <ul class="nav flex-column mb-2 game-nav">
                   <li class="nav-item  game-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/新上架.png') }}">
-                        <a class="nav-link active" aria-current="page" href="#">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.game_page') }}">
                           <span data-feather="home"></span>
                         Game
                         </a>
                     </li>
-{#                    <li class="nav-item  game-category">#}
-{#                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/動作.png') }}">#}
-{#                        <a class="nav-link active" aria-current="page" href="#">#}
-{#                          <span data-feather="home"></span>#}
-{#                          動作#}
-{#                        </a>#}
-{#                    </li>#}
-{#                    <li class="nav-item  game-category">#}
-{#                        <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/恐怖.png') }}">#}
-{#                        <a class="nav-link active" aria-current="page" href="#">#}
-{#                          <span data-feather="home"></span>#}
-{#                          恐怖#}
-{#                        </a>#}
-{#                    </li>#}
                     <li class="nav-item game-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/影片.png') }}">
                         <a class="nav-link active" aria-current="page" href="#">
@@ -140,7 +120,7 @@
                     </li>
                     <li class="nav-item game-category">
                         <img class="sidebar-img" src="{{ url_for('portal.static', filename='icons/商業.png') }}">
-                        <a class="nav-link active" aria-current="page" href="#">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('portal.app_page') }}">
                           <span data-feather="home"></span>
                           Application
                         </a>
