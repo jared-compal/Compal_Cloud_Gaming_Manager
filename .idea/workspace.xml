@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+
     <list default="true" id="76f65615-4b3d-4da0-8549-919875e394b2" name="Default Changelist" comment="">
       <change afterPath="$PROJECT_DIR$/manager/static/gunjack_demo_1.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/manager/static/redout_demo.png" afterDir="false" />
@@ -12,6 +13,7 @@
       <change beforePath="$PROJECT_DIR$/manager/web_portal/templates/content_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/templates/content_page.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager/web_portal/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/manager/web_portal/templates/index.html" afterDir="false" />
     </list>
+
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
