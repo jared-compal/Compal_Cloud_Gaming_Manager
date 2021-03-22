@@ -378,3 +378,7 @@ iframe {
 .card-category {
   margin: 12px 0px;
 }
+
+.card .video-js .vjs-tech {
+  border-radius: 20px 20px 0px 0px;
+}
