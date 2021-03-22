@@ -4,7 +4,7 @@ from flask import request, Blueprint
 from requests import get
 
 from manager import db
-from manager.models import StreamList, ClientConnectionList, datetime, GameList
+from manager.models import StreamList, ClientConnectionList, datetime, GameList, AppList
 
 streaming_service = Blueprint('streaming_service', __name__)
 
@@ -13,14 +13,17 @@ streaming_service = Blueprint('streaming_service', __name__)
 def add_stream():
     try:
         client_ip = request.form.get('client_ip', type=str)
-        connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
-        game_id = connection.game_id
-        game = GameList.query.filter_by(game_id=game_id).first()
+        # connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
+        connection = db.session.query(ClientConnectionList, AppList.app_title, GameList.game_title).filter(
+            ClientConnectionList.client_ip == client_ip
+        ).join(AppList, AppList.app_id == ClientConnectionList.app_id, isouter=True) \
+            .join(GameList, GameList.game_id == ClientConnectionList.app_id, isouter=True).first()
         video_source_url = 'http://' + request.remote_addr + request.form.get('video_source_url', type=str)
+        stream_title = connection.app_title if connection.app_title is not None else connection.game_title
         stream_info = {
             'server_ip': request.form.get('game_server_ip', type=str),
             # 'stream_title': request.form.get('stream_title', type=str),
-            'stream_title': game.game_title,
+            'stream_title': stream_title + 'is live!',
             'client_ip': client_ip,
             'stream_url': video_source_url,
             'video_source_url': video_source_url,
@@ -58,9 +61,13 @@ def delete_stream(stream_id):
 def start_streaming():
     # client_ip = request.remote_addr
     client_ip = request.args.get('client_ip')
-    connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
-
-    if connection.connection_status == 'playing':
+    if client_ip is None:
+        return {
+            'status': False,
+            'msg': 'Please specify the client_ip'
+        }
+    connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
+    if connection is not None:
         game_server_ip = connection.server_ip
 
         # 3. send request to /obs_start_streaming
@@ -71,7 +78,7 @@ def start_streaming():
         except Exception as e:
             logging.debug(e)
             return {
-                'status': True,
+                'status': False,
                 'msg': 'Something went wrong...',
             }
 

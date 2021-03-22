@@ -199,7 +199,9 @@ def update_connection_status():
     # Temporary method to open stream
     if connection_status == "playing":
         try:
-            start_streaming_res = get('http://{0}:5000/streaming_service/start?client_ip={1}'.format(SERVER_ADDR, client_ip))
+            start_streaming_res = get('http://{0}:5000/streaming/start?client_ip={1}'.format(SERVER_ADDR, client_ip))
+            if not start_streaming_res['status']:
+                return 'Successfully update status but fail to open streaming'
         except Exception as inst:
             logging.debug(inst)
 
