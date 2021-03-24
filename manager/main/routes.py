@@ -79,11 +79,15 @@ def playing_game(game_id):
         'msg': '',
         'status': False
     }
-    player_ip = request.remote_addr
-    logging.info(f'Player {player_ip} requests launching game: ')
+
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+
+    logging.info(f'Client {client_ip} requests launching game: ')
     query = GameList.query.filter_by(game_id=game_id).first()
     if query:
-        response = launch_app(response, player_ip, game_id, query.game_title, query.platform)
+        response = launch_app(response, client_ip, game_id, query.game_title, query.platform)
     else:
         response['msg'] = 'Selected game is not available'
     resp = jsonify(response)
@@ -99,11 +103,13 @@ def playing_app(app_id):
         'msg': '',
         'status': False
     }
-    player_ip = request.remote_addr
-    logging.info(f'Player {player_ip} requests launching app: ')
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+    logging.info(f'Client {client_ip} requests launching app: ')
     query = AppList.query.filter_by(app_id=app_id).first()
     if query:
-        response = launch_app(response, player_ip, app_id, query.app_title, query.platform)
+        response = launch_app(response, client_ip, app_id, query.app_title, query.platform)
     else:
         response['msg'] = 'Selected app is not available'
     resp = jsonify(response)
@@ -119,7 +125,10 @@ def resume_game():
         'game_server_ip': '',
         'msg': 'Successfully resume the app'
     }
-    client_ip = request.remote_addr
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+
     game_connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
     if game_connection is not None:
         data['game_server_ip'] = game_connection.server_ip
@@ -136,7 +145,9 @@ def close_game():
         'status': True,
         'msg': 'Successfully close the app'
     }
-    client_ip = request.remote_addr
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
     game_server = GameServers.query.filter_by(client_ip=client_ip, is_available=False).first()
     if game_server is not None:
         req_data = {

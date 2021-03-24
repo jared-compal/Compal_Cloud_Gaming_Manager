@@ -238,6 +238,9 @@ def get_content(content_type, content_id):
 
 
 def check_user_playing():
-    playing_info = ClientConnectionList.query.filter_by(client_ip=request.remote_addr,
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+    playing_info = ClientConnectionList.query.filter_by(client_ip=client_ip,
                                                         connection_status='playing').first()
     return '' if playing_info is None else playing_info.app_id
