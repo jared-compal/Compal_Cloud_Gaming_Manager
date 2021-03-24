@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 
 from manager.models import GameServers, \
     GameList, datetime, ClientConnectionList, User, Role, \
-    AvailableAppsForServers, AppList
+    AvailableAppsForServers, AppList, StreamList
 from manager import db, Config
 
 SERVER_ADDR = Config.SERVER_ADDR
@@ -199,7 +199,7 @@ def update_connection_status():
     # Temporary method to open stream
     if connection_status == "playing":
         try:
-            start_streaming_res = get('http://{0}:5000/streaming/start?client_ip={1}'.format(SERVER_ADDR, client_ip))
+            start_streaming_res = get('{0}/streaming/start?client_ip={1}'.format(SERVER_ADDR, client_ip)).json()
             if not start_streaming_res['status']:
                 return 'Successfully update status but fail to open streaming'
         except Exception as inst:
@@ -282,6 +282,10 @@ def update_status(query, connection_status):
         game_server = GameServers.query.filter_by(client_ip=query.client_ip, is_available=False).first()
         game_server.is_available = True
         game_server.client_ip = None
+        try:
+            StreamList.query.filter_by(server_ip=game_server.server_ip).delete()
+        except Exception as e:
+            logging.debug(e)
     query.connection_status = connection_status
     db.session.commit()
     return
@@ -334,7 +338,7 @@ def launch_app(response, player_ip, app_id, app_title, platform):
                 }
                 try:
                     server_res = post('http://{0}:8080/game-connection'
-                                      .format(game_server_ip), data=req_data, timeout=8)
+                                      .format(game_server_ip), data=req_data, timeout=15)
                     game_server_res = server_res.json()
                     if game_server_res['launch success']:
                         game_server.is_available = False
