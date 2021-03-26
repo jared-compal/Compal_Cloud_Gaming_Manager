@@ -29,12 +29,13 @@
             {% if type=='stream' %}
                 <h4>Streaming Info</h4>
                 <div class="content__data content-sub">Player - {{ data.player_info }}</div>
-                <div class="content__data">Redout is a tribute to the old racing monsters such as F-Zero, WipeOut, Rollcage, and POD. It is designed to be an uncompromising, fast, tough and satisfying driving experience, soaked in that vertigo that stands at the core of the arcade racing genre.</div>
+                <br>
+                <div class="content__data">Description - {{ data.content_brief }} is live now!</div>
             {% else %}
                 <h4>Game Info</h4>
                 <div class="content__data">Type - {{ data.content_type }}</div>
+                <br>
                 <div class="content__data">Description - {{ data.content_brief }}</div>
-                 <div class="content__data">Redout is a tribute to the old racing monsters such as F-Zero, WipeOut, Rollcage, and POD. It is designed to be an uncompromising, fast, tough and satisfying driving experience, soaked in that vertigo that stands at the core of the arcade racing genre.</div>
             {% endif %}
         </div>
     </div>

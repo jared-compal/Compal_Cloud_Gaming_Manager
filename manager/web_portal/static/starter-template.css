@@ -38,7 +38,7 @@ body {
   position: fixed;
   width: 200px;
 
-  /*top: 0;*/
+  top: 60px;
   /* rtl:raw:
   right: 0;
   */
@@ -62,11 +62,6 @@ body {
   transform: translateX(-11%);
 }
 
-@media (max-width: 767.98px) {
-  .sidebar {
-    top: 5rem;
-  }
-}
 
 .sidebar-sticky {
   position: relative;
@@ -125,7 +120,7 @@ body {
 }
 
 .navbar .form-control {
-  padding: .75rem 1rem;
+  padding: .25rem 1rem;
   border-width: 0;
   border-radius: 10px;
   background-color: #2A2D3A;
@@ -145,6 +140,7 @@ body {
 .container {
   margin-top: 5px;
   padding-bottom: 200px;
+  min-height: 643px;
 }
 
 .h2 {
@@ -166,7 +162,6 @@ hr{
 }
 .carousel-inner {
   border-radius: 15px;
-  height: 400px;
 }
 .carousel-item {
   text-align: -webkit-center;
@@ -275,7 +270,8 @@ h4 {
 .games {
   margin: auto;
   margin-bottom: 40px;
-  width: fit-content;
+  width: auto;
+  text-align: -webkit-center;
 }
 .content-sub {
   margin: 10px 0px;
@@ -381,4 +377,198 @@ iframe {
 
 .card .video-js .vjs-tech {
   border-radius: 20px 20px 0px 0px;
+}
+
+.navbar-items {
+  display: flex;
+}
+.sidebar-toggle>img {
+      padding-top: 28px;
+}
+.navbar-img{
+    background-size: cover;
+    background-image: url(../../static/logo.png);
+    background-repeat: no-repeat;
+    height: 50px;
+    width: 220px;
+    margin: 10px auto;
+    padding-left: 15px;
+}
+.pt-3 {
+  padding-bottom: 90px;
+}
+#sidebarMenu {
+  overflow: auto;
+}
+.d-flex.pb-2 > a {
+  font-weight: bold;
+  color: lightgrey;
+  text-decoration: none;
+}
+.d-flex.pb-2 > a:hover {
+  color: white;
+}
+footer {
+  height: 60px;
+  background-color: #1d1d1d;
+  display: flex;
+  justify-content: flex-end;
+}
+footer>div {
+  color: whitesmoke;
+  padding: 0px 10px;
+  font-size: 18px;
+  margin: auto 0px;
+}
+
+@media (max-width: 992px) {
+  .ms-sm-auto {
+    margin-left: 15% !important;
+  }
+    .page-content.is-closed {
+    transform: translateX(-15%);
+}
+  .px-md-4 {
+    padding-right: 1.5rem!important;
+    padding-left: 1.5rem!important;
+  }
+  .col-md-9 {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+  .carousel {
+    padding: 10px 0px;
+  }
+  .collapse:not(.show) {
+    display: initial;
+  }
+  .card-container {
+    padding: 0px 0px 0px 0px;
+    overflow: scroll;
+    max-width: 545px;
+    /*border: 1px solid yellow;*/
+  }
+  .card {
+    min-width: 270px;
+  }
+  .img__medium {
+    min-height: 280px;
+  }
+  .games h3 {
+    margin: 0px;
+    font-size: 30px;
+  }
+  .games {
+    margin-bottom: 0px;
+  }
+  .content__details>h4 {
+    font-size: 25px;
+  }
+  .content__data {
+    font-size: 20px;
+    line-height: 2.3rem;
+  }
+  .content__info {
+    padding: 0 20px
+  }
+  .games .video-js {
+    width: 100%;
+    height: 330px;
+    margin: 20px 0px;
+  }
+  footer {
+    justify-content: center;
+  }
+  footer>div {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  #input-search {
+    width: 150px;
+  }
+   .navbar-expand-md {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .navbar-expand-md .navbar-nav {
+    flex-direction: row;
+  }
+  .navbar-expand-md .navbar-nav .dropdown-menu {
+    position: absolute;
+  }
+  .navbar-expand-md .navbar-nav .nav-link {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  .navbar-expand-md .navbar-collapse {
+    display: flex !important;
+  }
+  .navbar-expand-md .navbar-toggler {
+    display: none;
+  }
+  .navbar-items {
+    padding-top: 3px;
+}
+  /*.d-flex {*/
+  /*  height: 40px;*/
+  /*}*/
+  .mb-2 {
+    margin-bottom: 0!important;
+  }
+  .card-container.container-md {
+    max-width: 340px;
+    /*border: 1px solid yellow;*/
+  }
+  div .card {
+    min-width: 100%;
+  }
+  .card>img {
+    height: auto
+  }
+  .games .video-js {
+    width: 100%;
+    height: 265px !important;
+  }
+  .img__medium {
+    min-height: 0px !important;
+  }
+}
+
+@media (max-width: 600px) {
+    #search-tool {
+      display: none !important;
+    }
+    .navbar-img {
+      position: relative;
+      left: 15px;
+
+    }
+    .card-body {
+      padding: 0.25rem 1rem !important;
+      text-align: center !important;
+    }
+    .card-game-description {
+      font-size: 14px
+    }
+    .games h3 {
+        font-size: 20px;
+    }
+    .content__details>h4 {
+      font-size: 18px;
+    }
+    .content__data {
+      font-size: 14px;
+      line-height: 1.8rem;
+    }
+    .content__info {
+      text-align: center;
+    }
+}
+
+@media (max-width: 345px) {
+    .d-flex {
+      display: none !important;
+    }
 }
