@@ -35,7 +35,7 @@
     {% if streams is defined %}
     {% for key, stream in streams.items() %}
         <div class="card card-category" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
-            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted" }' >
+            <video class="video-js vjs-default-skin card-img" data-setup='{"autoplay": true, "preload":"auto"}' >
 {#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{ "poster":"{{ stream.img_url }}"}' >#}
                 <source src="{{ stream.content_url }}" type="application/x-mpegURL" />
             </video>
