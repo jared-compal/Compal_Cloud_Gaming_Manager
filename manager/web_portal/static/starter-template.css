@@ -421,7 +421,22 @@ footer>div {
   margin: auto 0px;
 }
 
+.navbar {
+  	transition: all 1s ease;
+}
+
+
+
 @media (max-width: 992px) {
+  .shrink {
+    padding: 10px 0px !important;
+  }
+  .hide {
+    display: none;
+  }
+  .sidebar-shrink {
+    top: 35px;
+  }
   .ms-sm-auto {
     margin-left: 15% !important;
   }
