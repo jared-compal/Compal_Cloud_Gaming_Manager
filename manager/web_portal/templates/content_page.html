@@ -8,8 +8,8 @@
         <h3>{{ data.content_title }}</h3>
         {% endif %}
         {% if type=='stream' %}
-            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" autoplay="play"
-                   controls data-setup='{ "preload":"auto"}' width="800px" height="500px">
+            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered"
+                   controls data-setup='{"autoplay": true, "preload":"auto"}' width="800px" height="500px">
             <source src="{{ data.content_url }}" type="application/x-mpegURL" />
 
             <p class="vjs-no-js">
