@@ -169,7 +169,7 @@ def close_game():
 
     else:
         data['status'] = True
-        data['msg'] = 'App has been closed'
+        data['msg'] = 'App is closing...'
         return data
 
 
@@ -305,7 +305,8 @@ def update_status(query, connection_status):
 def launch_error_handling(check_client_status):
     error_server_ip = check_client_status.server_ip
     try:
-        check_client_status.is_available = False
+        check_client_status.is_available = True
+        # check_client_status.is_available = False
         check_client_status.client_ip = None
         db.session.commit()
         res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=5)
