@@ -117,7 +117,7 @@ def get_contents(content_type):
         "msg": "Unavailable content type"
     }
     if content_type == 'streams':
-        query = StreamList.query.all()
+        query = StreamList.query.order_by(StreamList.id.desc()).all()
         if query:
             data['total_num'] = len(query)
 

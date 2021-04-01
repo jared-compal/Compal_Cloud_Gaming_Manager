@@ -21,10 +21,11 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 def portal_page():
     identity, unset = is_authenticated()
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
+    streams = stream_info.get('streams')
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()
     app_info = get('{0}/apps'.format(SERVER_ADDR)).json()
     resp = make_response(render_template(
-        'index.html', games=game_info.get('games'), streams=stream_info.get('streams'),
+        'index.html', games=game_info.get('games'), streams=streams,
         apps=app_info.get('apps'), identity=identity
     ))
     if unset:
