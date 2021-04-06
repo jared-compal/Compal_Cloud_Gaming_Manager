@@ -3,20 +3,29 @@ from flask import jsonify
 from manager import db, jwt
 
 
+# @jwt.user_identity_loader
+# def user_identity_lookup(user):
+#     return user.id
+#
+#
+# @jwt.user_lookup_loader
+# def user_lookup_callback(_jwt_header, jwt_data):
+#     identity = jwt_data["sub"]
+#     return User.query.filter_by(id=identity).one_or_none()
+
 @jwt.user_identity_loader
-def user_identity_lookup(user):
-    return user.id
+def user_identity_lookup(device):
+    return device.id
 
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
-    return User.query.filter_by(id=identity).one_or_none()
+    return Device.query.filter_by(id=identity).one_or_none()
 
 
 @jwt.expired_token_loader
 def my_expired_token_callback(jwt_header, jwt_payload):
-
     return jsonify(code="Expired", err="Token expired, please refresh token"), 401
 
 
@@ -135,3 +144,10 @@ class UserRoles(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('role.id', ondelete='CASCADE'))
+
+
+class Device(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    device_name = db.Column(db.String(64), unique=False, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           default=datetime.utcnow)
