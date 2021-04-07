@@ -151,3 +151,10 @@ class Device(db.Model):
     device_name = db.Column(db.String(64), unique=False, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)
+
+
+class Dataflow(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    source_url = db.Column(db.String(512), nullable=False)
+    protocol = db.Column(db.Integer(), nullable=False)
+    app_name = db.Column(db.String(256), nullable=False)

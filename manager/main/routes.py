@@ -2,7 +2,7 @@ import os
 import logging
 from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post, get
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, current_user
 
 from manager.models import GameServers, \
     GameList, datetime, ClientConnectionList, User, Role, \
@@ -73,6 +73,7 @@ def unregister_game_server():
 
 
 @main.route('/games/<string:game_id>/launch', methods=['GET'])
+@jwt_required()
 def playing_game(game_id):
     logging.info('launch game')
     response = {
@@ -80,7 +81,9 @@ def playing_game(game_id):
         'status': False
     }
 
-    client_ip = request.args.get('id')
+    # client_ip = request.args.get('id')
+    client_ip = current_user.id
+    print('client_id: ', client_ip)
     if client_ip is None:
         client_ip = request.remote_addr
 
