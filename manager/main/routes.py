@@ -73,7 +73,6 @@ def unregister_game_server():
 
 
 @main.route('/games/<string:game_id>/launch', methods=['GET'])
-@jwt_required()
 def playing_game(game_id):
     logging.info('launch game')
     response = {

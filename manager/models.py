@@ -158,3 +158,4 @@ class Dataflow(db.Model):
     source_url = db.Column(db.String(512), nullable=False)
     protocol = db.Column(db.Integer(), nullable=False)
     app_name = db.Column(db.String(256), nullable=False)
+    dataflow_id = db.Column(db.String(256), unique=True, nullable=False)
