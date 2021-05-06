@@ -27,12 +27,13 @@ def create_app():
     from manager.list_service.list_service import list_service
     from manager.web_portal.web_portal import portal
     from manager.auth.auth_service import auth_service
-    # from manager.models import User
     from manager.streaming.streaming_service import streaming_service
+    from manager.dataflow_service.dataflow_service import dataflow_service
     app.register_blueprint(main)
     app.register_blueprint(list_service)
     app.register_blueprint(portal, url_prefix='/portal')
     app.register_blueprint(auth_service)
     app.register_blueprint(streaming_service, url_prefix='/streaming')
+    app.register_blueprint(dataflow_service)
     return app
 

@@ -13,17 +13,20 @@ streaming_service = Blueprint('streaming_service', __name__)
 def add_stream():
     try:
         client_ip = request.form.get('client_ip', type=str)
+        print(client_ip)
         # connection = ClientConnectionList.query.filter_by(client_ip=client_ip).first()
         connection = db.session.query(ClientConnectionList, AppList.app_title, GameList.game_title).filter(
-            ClientConnectionList.client_ip == client_ip
+            ClientConnectionList.client_ip == client_ip, ClientConnectionList.connection_status == 'playing'
         ).join(AppList, AppList.app_id == ClientConnectionList.app_id, isouter=True) \
             .join(GameList, GameList.game_id == ClientConnectionList.app_id, isouter=True).first()
         video_source_url = 'http://' + request.remote_addr + request.form.get('video_source_url', type=str)
         stream_title = connection.app_title if connection.app_title is not None else connection.game_title
+        
+        print(stream_title)
         stream_info = {
             'server_ip': request.form.get('game_server_ip', type=str),
             # 'stream_title': request.form.get('stream_title', type=str),
-            'stream_title': stream_title + 'is live!',
+            'stream_title': stream_title + ' live streaming!',
             'client_ip': client_ip,
             'stream_url': video_source_url,
             'video_source_url': video_source_url,
@@ -61,6 +64,7 @@ def delete_stream(stream_id):
 def start_streaming():
     # client_ip = request.remote_addr
     client_ip = request.args.get('client_ip')
+    print(client_ip)
     if client_ip is None:
         return {
             'status': False,
@@ -74,7 +78,9 @@ def start_streaming():
         try:
             server_resp_json = get('http://{0}:8080/obs_start_streaming?client_ip={1}'
                                    .format(game_server_ip, client_ip), timeout=30)
+            print('resp', server_resp_json)
             server_resp = server_resp_json.json()
+            print('json', server_resp)
         except Exception as e:
             logging.debug(e)
             return {
@@ -97,7 +103,7 @@ def start_streaming():
 @streaming_service.route('/stop')  # API for front-end client
 def stop_streaming():
     # client_ip = request.remote_addr
-    client_ip = request.args.get('client')
+    client_ip = request.args.get('client_ip')
     streaming_channel = StreamList.query.filter_by(client_ip=client_ip).first()
     if streaming_channel:
         game_server_ip = streaming_channel.server_ip

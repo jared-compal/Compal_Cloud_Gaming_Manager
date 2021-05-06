@@ -8,18 +8,18 @@
         <h3>{{ data.content_title }}</h3>
         {% endif %}
         {% if type=='stream' %}
-{#            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" autoplay="play"#}
-{#                   controls data-setup='{ "preload":"auto"}' width="800px" height="500px">#}
-{#            <source src="{{ data.content_url }}" type="application/x-mpegURL" />#}
+            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered"
+                   controls data-setup='{"autoplay": true, "preload":"auto"}' width="800px" height="500px">
+            <source src="{{ data.content_url }}" type="application/x-mpegURL" />
 
-{#            <p class="vjs-no-js">#}
-{#              To view this video please enable JavaScript, and consider upgrading to a#}
-{#              web browser that#}
-{#              <a href="https://videojs.com/html5-video-support/" target="_blank"#}
-{#                >supports HTML5 video</a>#}
-{#            </p>#}
-{#          </video>#}
-         <iframe class="content-iframe" width="100%" height="100%" src="{{ data.content_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <p class="vjs-no-js">
+              To view this video please enable JavaScript, and consider upgrading to a
+              web browser that
+              <a href="https://videojs.com/html5-video-support/" target="_blank"
+                >supports HTML5 video</a>
+            </p>
+          </video>
+{#         <iframe class="content-iframe" width="100%" height="100%" src="{{ data.content_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>#}
         {% else %}
             <img  class="img__medium" src="{{ data.img_url }}">
         {% endif %}
@@ -29,12 +29,13 @@
             {% if type=='stream' %}
                 <h4>Streaming Info</h4>
                 <div class="content__data content-sub">Player - {{ data.player_info }}</div>
-                <div class="content__data">Redout is a tribute to the old racing monsters such as F-Zero, WipeOut, Rollcage, and POD. It is designed to be an uncompromising, fast, tough and satisfying driving experience, soaked in that vertigo that stands at the core of the arcade racing genre.</div>
+                <br>
+                <div class="content__data">Description - {{ data.content_brief }} is live now!</div>
             {% else %}
                 <h4>Game Info</h4>
                 <div class="content__data">Type - {{ data.content_type }}</div>
+                <br>
                 <div class="content__data">Description - {{ data.content_brief }}</div>
-                 <div class="content__data">Redout is a tribute to the old racing monsters such as F-Zero, WipeOut, Rollcage, and POD. It is designed to be an uncompromising, fast, tough and satisfying driving experience, soaked in that vertigo that stands at the core of the arcade racing genre.</div>
             {% endif %}
         </div>
     </div>

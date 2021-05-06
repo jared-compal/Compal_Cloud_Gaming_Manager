@@ -2,11 +2,11 @@ import os
 import logging
 from flask import Blueprint, request, jsonify, send_from_directory
 from requests import post, get
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, current_user
 
 from manager.models import GameServers, \
     GameList, datetime, ClientConnectionList, User, Role, \
-    AvailableAppsForServers, AppList
+    AvailableAppsForServers, AppList, StreamList
 from manager import db, Config
 
 SERVER_ADDR = Config.SERVER_ADDR
@@ -79,11 +79,17 @@ def playing_game(game_id):
         'msg': '',
         'status': False
     }
-    player_ip = request.remote_addr
-    logging.info(f'Player {player_ip} requests launching game: ')
+
+    # client_ip = request.args.get('id')
+    client_ip = current_user.id
+    print('client_id: ', client_ip)
+    if client_ip is None:
+        client_ip = request.remote_addr
+
+    logging.info(f'Client {client_ip} requests launching game: ')
     query = GameList.query.filter_by(game_id=game_id).first()
     if query:
-        response = launch_app(response, player_ip, game_id, query.game_title, query.platform)
+        response = launch_app(response, client_ip, game_id, query.game_title, query.platform)
     else:
         response['msg'] = 'Selected game is not available'
     resp = jsonify(response)
@@ -99,11 +105,13 @@ def playing_app(app_id):
         'msg': '',
         'status': False
     }
-    player_ip = request.remote_addr
-    logging.info(f'Player {player_ip} requests launching app: ')
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+    logging.info(f'Client {client_ip} requests launching app: ')
     query = AppList.query.filter_by(app_id=app_id).first()
     if query:
-        response = launch_app(response, player_ip, app_id, query.app_title, query.platform)
+        response = launch_app(response, client_ip, app_id, query.app_title, query.platform)
     else:
         response['msg'] = 'Selected app is not available'
     resp = jsonify(response)
@@ -119,7 +127,10 @@ def resume_game():
         'game_server_ip': '',
         'msg': 'Successfully resume the app'
     }
-    client_ip = request.remote_addr
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
+
     game_connection = ClientConnectionList.query.filter_by(client_ip=client_ip, connection_status='playing').first()
     if game_connection is not None:
         data['game_server_ip'] = game_connection.server_ip
@@ -136,7 +147,9 @@ def close_game():
         'status': True,
         'msg': 'Successfully close the app'
     }
-    client_ip = request.remote_addr
+    client_ip = request.args.get('id')
+    if client_ip is None:
+        client_ip = request.remote_addr
     game_server = GameServers.query.filter_by(client_ip=client_ip, is_available=False).first()
     if game_server is not None:
         req_data = {
@@ -158,7 +171,7 @@ def close_game():
 
     else:
         data['status'] = True
-        data['msg'] = 'App has been closed'
+        data['msg'] = 'App is closing...'
         return data
 
 
@@ -199,7 +212,7 @@ def update_connection_status():
     # Temporary method to open stream
     if connection_status == "playing":
         try:
-            start_streaming_res = get('http://{0}:5000/streaming/start?client_ip={1}'.format(SERVER_ADDR, client_ip))
+            start_streaming_res = get('{0}/streaming/start?client_ip={1}'.format(SERVER_ADDR, client_ip)).json()
             if not start_streaming_res['status']:
                 return 'Successfully update status but fail to open streaming'
         except Exception as inst:
@@ -282,6 +295,10 @@ def update_status(query, connection_status):
         game_server = GameServers.query.filter_by(client_ip=query.client_ip, is_available=False).first()
         game_server.is_available = True
         game_server.client_ip = None
+        try:
+            StreamList.query.filter_by(server_ip=game_server.server_ip).delete()
+        except Exception as e:
+            logging.debug(e)
     query.connection_status = connection_status
     db.session.commit()
     return
@@ -290,7 +307,8 @@ def update_status(query, connection_status):
 def launch_error_handling(check_client_status):
     error_server_ip = check_client_status.server_ip
     try:
-        check_client_status.is_available = False
+        check_client_status.is_available = True
+        # check_client_status.is_available = False
         check_client_status.client_ip = None
         db.session.commit()
         res = get('http://{0}:8080/connection-timeout'.format(error_server_ip), timeout=5)
@@ -334,7 +352,7 @@ def launch_app(response, player_ip, app_id, app_title, platform):
                 }
                 try:
                     server_res = post('http://{0}:8080/game-connection'
-                                      .format(game_server_ip), data=req_data, timeout=8)
+                                      .format(game_server_ip), data=req_data, timeout=15)
                     game_server_res = server_res.json()
                     if game_server_res['launch success']:
                         game_server.is_available = False

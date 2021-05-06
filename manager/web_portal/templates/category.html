@@ -35,14 +35,14 @@
     {% if streams is defined %}
     {% for key, stream in streams.items() %}
         <div class="card card-category" onclick="javascript:location.href='{{ url_for("portal.portal_streams", stream_id=stream.content_id) }}'">
-{#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{"autoplay": "muted" }' >#}
+            <video class="video-js vjs-default-skin card-img" data-setup='{"autoplay": true, "preload":"auto"}' >
 {#            <video class="video-js vjs-default-skin card-img" preload="auto" data-setup='{ "poster":"{{ stream.img_url }}"}' >#}
-{#                <source src="{{ stream.content_url }}" type="application/x-mpegURL" />#}
-{#            </video>#}
-             <iframe  height="120px" src="{{ stream.content_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <source src="{{ stream.content_url }}" type="application/x-mpegURL" />
+            </video>
+{#             <iframe  height="120px" src="{{ stream.content_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>#}
             <div class="card-body">
                 <div class="card-game-title">{{ stream.content_title }}</div>
-                <div class="card-game-description">{{ stream.player_info }}</div>
+                <div class="card-game-description">{{ stream.player_info }} is on live show</div>
             </div>
         </div>
 
