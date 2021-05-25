@@ -57,13 +57,13 @@ def device_unregister():
 #     return validate_username(username, password)
 #
 #
-# @auth_service.route('/protected')
-# @jwt_required()
-# def protected_content():
-#     return jsonify(
-#         id=current_user.id,
-#         username=current_user.username
-#     )
+@auth_service.route('/protected')
+@jwt_required()
+def protected_content():
+    return jsonify(
+        id=current_user.id,
+        username=current_user.username
+    )
 
 
 @auth_service.route('/refresh', methods=['GET'])

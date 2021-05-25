@@ -20,6 +20,7 @@ portal = Blueprint('portal', __name__, template_folder='templates', static_folde
 @portal.route('/')
 def portal_page():
     identity, unset = is_authenticated()
+    print(identity, unset, 'debugging')
     stream_info = get('{0}/streams'.format(SERVER_ADDR)).json()
     streams = stream_info.get('streams')
     game_info = get('{0}/games'.format(SERVER_ADDR)).json()

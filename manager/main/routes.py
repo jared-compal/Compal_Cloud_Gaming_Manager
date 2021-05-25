@@ -80,8 +80,8 @@ def playing_game(game_id):
         'status': False
     }
 
-    # client_ip = request.args.get('id')
-    client_ip = current_user.id
+    client_ip = request.args.get('id')
+    # client_ip = current_user.id
     print('client_id: ', client_ip)
     if client_ip is None:
         client_ip = request.remote_addr
